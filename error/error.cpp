@@ -1,5 +1,5 @@
 #include "error.h"
 
-Error::errorMessage() {
+std::string Error::errorMessage() {
 	return _errorMessage;
 }
