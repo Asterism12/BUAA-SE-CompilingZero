@@ -6,12 +6,12 @@ Usage:
 or 
   cc0 [-h]
 Options:
-  -s        将输入的 c0 源代码翻译为文本汇编文件
-  -c        将输入的 c0 源代码翻译为二进制目标文件
-  -h        显示关于编译器使用的帮助
-  -o file   输出到指定的文件 file
+  -s        Translate the input c0 source code into a text assembly file
+  -c        Translate the input c0 source code into a binary object file
+  -h        Shows help with compiler usage
+  -o file   Output to the specified file
 
-不提供任何参数时，默认为 -h
-提供 input 不提供 -o file 时，默认为 -o out)";
+When no parameters are provided, the default is -h
+f input does not provide -o file, the default is -o out)";
 	std::cout << str << std::endl;
 }
