@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("BUAA-SE-CompilingZero")
+project ("cc0")
 
 set(PROJECT_EXE ${PROJECT_NAME})
 set(PROJECT_LIB "${PROJECT_NAME}_lib")
