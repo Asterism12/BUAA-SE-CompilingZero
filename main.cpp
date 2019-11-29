@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include "help/help.h"
+#include "error/error.h"
 
 int main(int argc, char** argv) {
 
@@ -20,7 +21,8 @@ int main(int argc, char** argv) {
 	case 4:
 		break;
 	default:
-		std::cout << "Error : Wrong parameter list" << std::endl;
+		Error e = Error("Wrong Parameter Error");
+		e.printErrorMessage();
 		getHelp();
 		break;
 	}

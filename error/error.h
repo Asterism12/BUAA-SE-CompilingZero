@@ -1,9 +1,10 @@
 #pragma once
-#include<string>
+#include <string>
+#include <iostream>
 class Error {
 private:
 	std::string _errorMessage;
 public:
 	Error(std::string errorMessage) :_errorMessage(errorMessage) {};
-	std::string errorMessage();
+	void printErrorMessage();
 };
