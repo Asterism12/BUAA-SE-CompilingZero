@@ -1,8 +1,17 @@
-#include<iostream>
+#include <iostream>
 
 int main(int argc, char** argv) {
 
-	for (int i = 0; i < argc; i++)
-		std::cout << "Argument " << i << " is " << argv[i] << std::endl;
-	return EXIT_SUCCESS;
+	switch (argc)
+	{
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	default:
+		std::cout << "Wrong parameter list";
+		break;
+	}
 }
