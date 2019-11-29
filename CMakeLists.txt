@@ -5,5 +5,4 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("BUAA-SE-CompilingZero")
 
-# 包含子项目。
-add_subdirectory ("BUAA-SE-CompilingZero")
+add_executable(BUAA-SE-ComplingZero "main.cpp")
