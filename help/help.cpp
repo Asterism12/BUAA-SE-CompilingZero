@@ -12,6 +12,6 @@ Options:
   -o file   Output to the specified file
 
 When no parameters are provided, the default is -h
-f input does not provide -o file, the default is -o out)";
+If input does not provide -o file, the default is -o out)";
 	std::cout << str << std::endl;
 }
