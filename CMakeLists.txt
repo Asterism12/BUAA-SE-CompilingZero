@@ -5,6 +5,8 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("cc0")
 
+add_subdirectory(3rd_party/argparse)
+
 set(PROJECT_EXE ${PROJECT_NAME})
 set(PROJECT_LIB "${PROJECT_NAME}_lib")
 
@@ -23,4 +25,4 @@ add_library(${PROJECT_LIB} ${lib_src})
 
 add_executable(${PROJECT_EXE} ${main_src})
 
-target_link_libraries(${PROJECT_EXE} ${PROJECT_LIB})
+target_link_libraries(${PROJECT_EXE} ${PROJECT_LIB} argparse)

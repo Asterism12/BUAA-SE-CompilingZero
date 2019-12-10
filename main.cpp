@@ -1,3 +1,4 @@
+#include "argparse.hpp"
 #include <iostream>
 #include <string.h>
 #include "help/help.h"
