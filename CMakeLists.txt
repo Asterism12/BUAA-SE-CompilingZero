@@ -13,8 +13,6 @@ set(PROJECT_LIB "${PROJECT_NAME}_lib")
 set(lib_src
 	error/error.h
 	error/error.cpp
-	help/help.h
-	help/help.cpp
 )
 
 set(main_src

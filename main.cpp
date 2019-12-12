@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iostream>
 #include <string.h>
-#include "help/help.h"
 #include "error/error.h"
 
 int main(int argc, char** argv) {
