@@ -1,5 +1,6 @@
 #pragma once
-class enum TokenType {
+#include <any>
+enum class TokenType {
 	NULL_TOKEN,
 	UNSIGNED_INTEGER,
 	IDENTIFIER,

@@ -13,6 +13,9 @@ set(PROJECT_LIB "${PROJECT_NAME}_lib")
 set(lib_src
 	error/error.h
 	error/error.cpp
+	tokenizer/token.h
+	tokenizer/tokenizer.h
+	tokenizer/tokenizer.cpp
 )
 
 set(main_src
@@ -22,5 +25,15 @@ set(main_src
 add_library(${PROJECT_LIB} ${lib_src})
 
 add_executable(${PROJECT_EXE} ${main_src})
+
+set_target_properties(${PROJECT_EXE} PROPERTIES
+                      CXX_STANDARD 17
+                      CXX_STANDARD_REQUIRED ON
+)
+
+set_target_properties(${PROJECT_LIB} PROPERTIES
+                      CXX_STANDARD 17
+                      CXX_STANDARD_REQUIRED ON
+)
 
 target_link_libraries(${PROJECT_EXE} ${PROJECT_LIB} argparse)

@@ -2,7 +2,9 @@
 #include <fstream>
 #include <vector>
 #include <string>
-class enum DFAState {
+#include <optional>
+#include "token.h"
+enum class DFAState {
 	INITIAL_STATE,
 	UNSIGNED_INTEGER_STATE,
 	PLUS_SIGN_STATE,
@@ -20,11 +22,20 @@ class enum DFAState {
 
 class Tokenizer {
 public:
-
+	Tokenizer(std::istream& ifs): _rdr(ifs), _initialized(false), _line(0) {};
+	std::vector<Token> AllTokens();
+	Token NextToken();
 private:
 	std::istream& _rdr;
+	bool _initialized;
 	std::vector<std::string> _lines_buffer;
-	std::uint64_t _line;
+	std::pair<uint64_t, uint64_t> _ptr;
 
+	Token nextToken();
 	void Tokenizer::readAll() {}
+	std::pair<uint64_t, uint64_t> nextPos();
+
+	std::optional<char> nextChar();
+	bool isEOF();
+	void unreadLast();
 };
