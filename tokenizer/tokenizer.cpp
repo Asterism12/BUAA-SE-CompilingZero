@@ -10,31 +10,26 @@ void Tokenizer::readAll() {
 	return;
 }
 
-Token Tokenizer::NextToken() {
-	//改用std::optional实现EOF
+std::optional<Token> Tokenizer::NextToken() {
 	if (!_initialized)
 		readAll();
 	if (_rdr.bad()) {
 		throw Error("StreamError");
 	}
 	if (isEOF()) {
-		throw Error("EOF");
+		return {};
 	}
 	return nextToken();
 }
 
 std::vector<Token> Tokenizer::AllTokens() {
 	std::vector<Token> result;
-
 	while (true) {
 		auto p = NextToken();
-		if (p.second.has_value()) {
-			if (p.second.value().GetCode() == ErrorCode::ErrEOF)
-				return std::make_pair(result, std::optional<CompilationError>());
-			else
-				return std::make_pair(std::vector<Token>(), p.second);
+		if (p.has_value()) {
+			result.emplace_back(p.value());
 		}
-		result.emplace_back(p.first.value());
+		return result;
 	}
 }
 
@@ -48,4 +43,26 @@ std::optional<char> Tokenizer::nextChar() {
 	auto result = _lines_buffer[_ptr.first][_ptr.second];
 	_ptr = nextPos();
 	return result;
+}
+
+std::pair<uint64_t, uint64_t> Tokenizer::nextPos() {
+	if (_ptr.first >= _lines_buffer.size())
+		throw Error("advance after EOF");
+	if (_ptr.second == _lines_buffer[_ptr.first].size() - 1)
+		return std::make_pair(_ptr.first + 1, 0);
+	else
+		return std::make_pair(_ptr.first, _ptr.second + 1);
+}
+
+void Tokenizer::unreadLast() {
+	_ptr = previousPos();
+}
+
+std::pair<uint64_t, uint64_t> Tokenizer::previousPos() {
+	if (_ptr.first == 0 && _ptr.second == 0)
+		throw Error("previous position from beginning");
+	if (_ptr.second == 0)
+		return std::make_pair(_ptr.first - 1, _lines_buffer[_ptr.first - 1].size() - 1);
+	else
+		return std::make_pair(_ptr.first, _ptr.second - 1);
 }

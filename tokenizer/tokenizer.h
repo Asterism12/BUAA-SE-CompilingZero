@@ -22,9 +22,10 @@ enum class DFAState {
 
 class Tokenizer {
 public:
-	Tokenizer(std::istream& ifs): _rdr(ifs), _initialized(false), _line(0) {};
+	Tokenizer(std::istream& ifs)
+		: _rdr(ifs), _initialized(false), _ptr(0, 0), _lines_buffer() {}
 	std::vector<Token> AllTokens();
-	Token NextToken();
+	std::optional<Token> NextToken();
 private:
 	std::istream& _rdr;
 	bool _initialized;
@@ -33,7 +34,9 @@ private:
 
 	Token nextToken();
 	void Tokenizer::readAll() {}
+
 	std::pair<uint64_t, uint64_t> nextPos();
+	std::pair<uint64_t, uint64_t> Tokenizer::previousPos();
 
 	std::optional<char> nextChar();
 	bool isEOF();
