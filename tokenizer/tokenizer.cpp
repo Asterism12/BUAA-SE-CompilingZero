@@ -67,7 +67,7 @@ std::pair<uint64_t, uint64_t> Tokenizer::previousPos() {
 		return std::make_pair(_ptr.first, _ptr.second - 1);
 }
 
-Token Tokenizer::nextToken() {
+std::optional<Token> Tokenizer::nextToken() {
 	std::stringstream ss;
 	DFAState current_state = DFAState::INITIAL_STATE;
 	while (true) {
@@ -75,9 +75,14 @@ Token Tokenizer::nextToken() {
 		switch (current_state)
 		{
 		case DFAState::INITIAL_STATE: {
+			//遭遇文件尾
 			if (!current_char.has_value()) {
-				throw Error("EOFError");
+				return {};
 			}
+
+			auto ch = current_char.value();
+			// 标记是否读到了不合法的字符，初始化为否
+			auto invalid = false;
 		}
 		default:
 			break;

@@ -33,7 +33,7 @@ private:
 	std::vector<std::string> _lines_buffer;
 	std::pair<uint64_t, uint64_t> _ptr;
 
-	Token nextToken();
+	std::optional<Token> nextToken();
 	void Tokenizer::readAll() {}
 
 	std::pair<uint64_t, uint64_t> nextPos();
