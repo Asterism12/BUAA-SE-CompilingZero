@@ -1,5 +1,6 @@
 #include "tokenizer.h"
 #include "../error/error.h"
+#include "utils.hpp"
 void Tokenizer::readAll() {
 	if (_initialized)
 		return;
@@ -83,6 +84,64 @@ std::optional<Token> Tokenizer::nextToken() {
 			auto ch = current_char.value();
 			// 标记是否读到了不合法的字符，初始化为否
 			auto invalid = false;
+
+			if (miniplc0::isspace(ch)) // 读到的字符是空白字符（空格、换行、制表符等）
+				current_state = DFAState::INITIAL_STATE; 
+			else if (!miniplc0::isprint(ch)) // control codes and backspace
+				invalid = true;
+			else if (miniplc0::isdigit(ch))
+				current_state = DFAState::UNSIGNED_INTEGER_STATE;
+			else if (miniplc0::isalpha(ch))
+				current_state = DFAState::IDENTIFIER_STATE;
+			else {
+				switch (ch) {
+				case '=': 
+					current_state = DFAState::EQUAL_SIGN_STATE;
+					break;
+				case '-':
+					current_state = DFAState::MINUS_SIGN_STATE;
+					break;
+				case '+':
+					current_state = DFAState::PLUS_SIGN_STATE;
+					break;
+				case '*':
+					current_state = DFAState::MULTIPLICATION_SIGN_STATE;
+					break;
+				case '/':
+					current_state = DFAState::DIVISION_SIGN_STATE;
+					break;
+				case ';':
+					current_state = DFAState::SEMICOLON_STATE;
+					break;
+				case '(':
+					current_state = DFAState::LEFTBRACKET_STATE;
+					break;
+				case ')':
+					current_state = DFAState::RIGHTBRACKET_STATE;
+					break;
+
+				//在min0的基础上添加了2种状态
+				case '>':
+					current_state = DFAState::GREATER_THAN_STATE;
+					break;
+				case '<':
+					current_state = DFAState::LESS_THAN_STATE;
+					break;
+
+					// 不接受的字符导致的不合法的状态
+				default:
+					invalid = true;
+					break;
+				}
+				if (invalid) {
+					unreadLast();
+					throw Error("InvalidInputErr");
+				}
+				// 如果读到的字符导致了状态的转移，说明它是一个token的第一个字符
+				if (current_state != DFAState::INITIAL_STATE) // ignore white spaces
+					ss << ch; // 存储读到的字符
+				break;
+			}
 		}
 		default:
 			break;
