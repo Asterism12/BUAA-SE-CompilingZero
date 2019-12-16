@@ -4,6 +4,14 @@
 #include <string.h>
 #include "error/error.h"
 
+void compiler(std::istream& input, std::ostream& output) {
+
+}
+
+void assembler(std::istream& input, std::ostream& output) {
+
+}
+
 int main(int argc, char** argv) {
 
 	argparse::ArgumentParser program("program name");
@@ -73,10 +81,10 @@ int main(int argc, char** argv) {
 		exit(2);
 	}
 	if (program["-s"] == true) {
-		//
+		assembler(*input, *output);
 	}
 	else if (program["-c"] == true) {
-		//
+		compiler(*input, *output);
 	}
 	else {
 		std::cout << "You must choose -c or -s.";
