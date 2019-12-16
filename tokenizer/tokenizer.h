@@ -1,4 +1,7 @@
 #pragma once
+#include <fstream>
+#include <vector>
+#include <string>
 class enum DFAState {
 	INITIAL_STATE,
 	UNSIGNED_INTEGER_STATE,
@@ -16,5 +19,12 @@ class enum DFAState {
 };
 
 class Tokenizer {
+public:
 
+private:
+	std::istream& _rdr;
+	std::vector<std::string> _lines_buffer;
+	std::uint64_t _line;
+
+	void Tokenizer::readAll() {}
 };
