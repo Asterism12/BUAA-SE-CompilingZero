@@ -127,6 +127,7 @@ std::optional<Token> Tokenizer::nextToken() {
 				case '<':
 					current_state = DFAState::LESS_THAN_STATE;
 					break;
+				//还要添加大括号和感叹号
 
 					// 不接受的字符导致的不合法的状态
 				default:
