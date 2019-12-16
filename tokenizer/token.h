@@ -21,3 +21,12 @@ class enum TokenType {
 	GREATER_THAN_EQUAL_SIGH,
 	LESS_THAN_EQUAL_SIGH
 };
+
+class Token final{
+public:
+	TokenType GetType() const { return _type; };
+	std::any GetValue() const { return _value; };
+private:
+	TokenType _type;
+	std::any _value;
+};
