@@ -2,5 +2,10 @@
 #include "error.h"
 
 void Error::printErrorMessage() {
-	std::cout << "Error : " + _errorMessage << std::endl;
+	if (_lineNumber == 0) {
+		std::cout << "Error : " + _errorMessage + " ." << std::endl;
+	}
+	else {
+		std::cout << "Error : " + _errorMessage + "in line" << _lineNumber + " ." << std::endl;
+	}
 }
