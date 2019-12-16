@@ -16,6 +16,7 @@ set(lib_src
 	tokenizer/token.h
 	tokenizer/tokenizer.h
 	tokenizer/tokenizer.cpp
+	tokenizer/utils.hpp
 )
 
 set(main_src
