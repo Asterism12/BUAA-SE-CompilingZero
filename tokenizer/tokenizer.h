@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <optional>
+#include <sstream>
 #include "token.h"
 enum class DFAState {
 	INITIAL_STATE,

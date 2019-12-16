@@ -66,3 +66,21 @@ std::pair<uint64_t, uint64_t> Tokenizer::previousPos() {
 	else
 		return std::make_pair(_ptr.first, _ptr.second - 1);
 }
+
+Token Tokenizer::nextToken() {
+	std::stringstream ss;
+	DFAState current_state = DFAState::INITIAL_STATE;
+	while (true) {
+		auto current_char = nextChar();
+		switch (current_state)
+		{
+		case DFAState::INITIAL_STATE: {
+			if (!current_char.has_value()) {
+				throw Error("EOFError");
+			}
+		}
+		default:
+			break;
+		}
+	}
+}
