@@ -25,6 +25,7 @@ enum class TokenType {
 
 class Token final{
 public:
+	Token(TokenType type, std::any value) :_type(type), _value(value) {};
 	TokenType GetType() const { return _type; };
 	std::any GetValue() const { return _value; };
 private:

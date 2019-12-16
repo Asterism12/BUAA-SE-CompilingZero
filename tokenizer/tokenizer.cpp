@@ -143,6 +143,48 @@ std::optional<Token> Tokenizer::nextToken() {
 				break;
 			}
 		}
+		case DFAState::UNSIGNED_INTEGER_STATE: {
+			// 如果当前已经读到了文件尾，则解析已经读到的字符串为整数
+			//     解析成功则返回无符号整数类型的token，否则返回编译错误
+			// 如果读到的字符是数字，则存储读到的字符
+			// 如果读到的是字母，则存储读到的字符，并切换状态到标识符
+			// 如果读到的字符不是上述情况之一，则回退读到的字符，并解析已经读到的字符串为整数
+			//     解析成功则返回无符号整数类型的token，否则返回编译错误
+			if (!current_char.has_value()) {
+				try {
+					int ret = std::stoi(ss.str());
+					return Token(TokenType::UNSIGNED_INTEGER, ret);
+				}
+				catch (std::invalid_argument) {
+					throw Error("InvalidAgumentErr");
+				}
+				catch (std::out_of_range) {
+					throw Error("IntegerOverflowErr");
+				}
+			}
+			auto ch = current_char.value();
+			if (miniplc0::isdigit(ch)) {
+				ss << ch;
+			}
+			else if (miniplc0::isalpha(ch)) {
+				ss << ch;
+				current_state = DFAState::IDENTIFIER_STATE;
+			}
+			else {
+				unreadLast();
+				try {
+					int ret = std::stoi(ss.str());
+					return Token(TokenType::UNSIGNED_INTEGER, ret);
+				}
+				catch (std::invalid_argument) {
+					throw Error("InvalidAgumentErr");
+				}
+				catch (std::out_of_range) {
+					throw Error("IntegerOverflowErr");
+				}
+			}
+			break;
+		}
 		default:
 			break;
 		}
