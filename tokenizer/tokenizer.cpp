@@ -4,9 +4,21 @@ std::uint32_t htoi(std::string h) {
 	if (h.size() <= 2 || h[0] != '0' || (h[1] != 'x' && h[1] != 'X')) {
 		throw std::invalid_argument("received invalid argument");
 	}
-	std::uint64_t x = 1, ret = 0;
+	std::uint64_t x = 1, ret = 0, tmp;
 	for (int i = h.size() - 1; i >= 2; i--) {
-		ret += h[i] * x;
+		if (isdigit(h[i])) {
+			tmp = h[i] - '0';
+		}
+		else if ('a' <= h[i] && h[i] <= 'z') {
+			tmp = h[i] - 'a' + 10;
+		}
+		else if ('A' <= h[i] && h[i] <= 'Z') {
+			tmp = h[i] - 'A' + 10;
+		}
+		else {
+			throw std::invalid_argument("received invalid argument");
+		}
+		ret += (h[i]) * x;
 		if (ret > INT_MAX) {
 			throw std::out_of_range("out of range");
 		}
@@ -99,7 +111,7 @@ std::optional<Token> Tokenizer::nextToken() {
 			auto invalid = false;
 
 			if (miniplc0::isspace(ch)) // 读到的字符是空白字符（空格、换行、制表符等）
-				current_state = DFAState::INITIAL_STATE; 
+				current_state = DFAState::INITIAL_STATE;
 			else if (!miniplc0::isprint(ch)) // control codes and backspace
 				invalid = true;
 			else if (miniplc0::isdigit(ch))
@@ -108,7 +120,7 @@ std::optional<Token> Tokenizer::nextToken() {
 				current_state = DFAState::IDENTIFIER_STATE;
 			else {
 				switch (ch) {
-				case '=': 
+				case '=':
 					current_state = DFAState::EQUAL_SIGN_STATE;
 					break;
 				case '-':
@@ -133,7 +145,7 @@ std::optional<Token> Tokenizer::nextToken() {
 					current_state = DFAState::RIGHTBRACKET_STATE;
 					break;
 
-				//在min0的基础上添加了6种状态
+					//在min0的基础上添加了6种状态
 				case '>':
 					current_state = DFAState::GREATER_THAN_STATE;
 					break;
@@ -152,7 +164,7 @@ std::optional<Token> Tokenizer::nextToken() {
 				case ',':
 					current_state = DFAState::COMMA_STATE;
 
-				// 不接受的字符导致的不合法的状态
+					// 不接受的字符导致的不合法的状态
 				default:
 					invalid = true;
 					break;
@@ -283,39 +295,39 @@ std::optional<Token> Tokenizer::nextToken() {
 		}
 		case DFAState::PLUS_SIGN_STATE: {
 			unreadLast(); // Yes, we unread last char even if it's an EOF.
-			return Token(TokenType::PLUS_SIGN,'+');
+			return Token(TokenType::PLUS_SIGN, '+');
 		}
 		case DFAState::MINUS_SIGN_STATE: {
 			unreadLast();
-			return Token(TokenType::MINUS_SIGN, '-');		
+			return Token(TokenType::MINUS_SIGN, '-');
 		}
 		case DFAState::MULTIPLICATION_SIGN_STATE: {
-			unreadLast(); 
-			return Token(TokenType::MULTIPLICATION_SIGN, '*');			
+			unreadLast();
+			return Token(TokenType::MULTIPLICATION_SIGN, '*');
 		}
 		case DFAState::DIVISION_SIGN_STATE: {
-			unreadLast(); 
+			unreadLast();
 			return Token(TokenType::DIVISION_SIGN, '/');
 		}
 		case DFAState::SEMICOLON_STATE: {
-			unreadLast(); 
+			unreadLast();
 			return Token(TokenType::SEMICOLON, ';');
 		}
 		case DFAState::LEFTBRACKET_STATE: {
-			unreadLast(); 
+			unreadLast();
 			return Token(TokenType::LEFT_BRACKET, '(');
 		}
 		case DFAState::RIGHTBRACKET_STATE: {
-			unreadLast(); 
+			unreadLast();
 			return Token(TokenType::RIGHT_BRACKET, ')');
 		}
 
-		//c0文法
+										 //c0文法
 		case DFAState::COMMA_STATE: {
 			unreadLast();
 			return Token(TokenType::COMMA_SIGH, ',');
 		}
-		case DFAState::LEFTBRACE_STATE:{
+		case DFAState::LEFTBRACE_STATE: {
 			unreadLast();
 			return Token(TokenType::LEFT_BRACE, '{');
 		}
@@ -338,7 +350,7 @@ std::optional<Token> Tokenizer::nextToken() {
 			//> & >=
 			auto ch = current_char.value();
 			if (ch == '=') {
-				return Token(TokenType::GREATER_THAN_EQUAL_SIGH,">=");
+				return Token(TokenType::GREATER_THAN_EQUAL_SIGH, ">=");
 			}
 			else {
 				unreadLast();
