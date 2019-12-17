@@ -120,7 +120,7 @@ std::optional<Token> Tokenizer::nextToken() {
 					current_state = DFAState::RIGHTBRACKET_STATE;
 					break;
 
-				//在min0的基础上添加了6种状态,未完成：16进制
+				//在min0的基础上添加了6种状态
 				case '>':
 					current_state = DFAState::GREATER_THAN_STATE;
 					break;
@@ -210,6 +210,9 @@ std::optional<Token> Tokenizer::nextToken() {
 				std::string str = ss.str();
 				if (ReservedWords.find(str) != ReservedWords.end()) {
 					return Token(TokenType::RESERVED_WORD, str);
+				}
+				else if (str[0] == '0' && str[1] == 'x') {
+					//转16进制
 				}
 				else {
 					return Token(TokenType::IDENTIFIER, str);

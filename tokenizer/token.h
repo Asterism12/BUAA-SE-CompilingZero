@@ -24,7 +24,8 @@ enum class TokenType {
 	EXCLAMATION_SIGH,
 	UNEQUAL_SIGN,
 	ASSIGNMENT_SIGN,
-	COMMA_SIGH
+	COMMA_SIGH,
+	HEXADECIMAL_SIGH
 };
 
 std::set<std::string> ReservedWords = {
