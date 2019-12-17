@@ -1,10 +1,14 @@
 #pragma once
+#include "tokenizer/token.h"
+#include "tokenizer/utils.hpp"
+#include "error/error.h"
+
 #include <fstream>
 #include <vector>
 #include <string>
 #include <optional>
 #include <sstream>
-#include "token.h"
+
 enum class DFAState {
 	INITIAL_STATE,
 	UNSIGNED_INTEGER_STATE,

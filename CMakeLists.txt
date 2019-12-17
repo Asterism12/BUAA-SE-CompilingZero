@@ -37,4 +37,7 @@ set_target_properties(${PROJECT_LIB} PROPERTIES
                       CXX_STANDARD_REQUIRED ON
 )
 
+target_include_directories(${PROJECT_EXE} PRIVATE .)
+target_include_directories(${PROJECT_LIB} PRIVATE .)
+
 target_link_libraries(${PROJECT_EXE} ${PROJECT_LIB} argparse)

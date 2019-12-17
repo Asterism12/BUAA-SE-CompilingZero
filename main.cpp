@@ -1,15 +1,28 @@
 #include "argparse.hpp"
+
+#include "error/error.h"
+#include "tokenizer/tokenizer.h"
+
 #include <fstream>
 #include <iostream>
 #include <string.h>
-#include "error/error.h"
-#include "tokenizer/tokenizer.h"
 
 void compiler(std::istream& input, std::ostream& output) {
 	Tokenizer tkz(input);
 	std::vector<Token> tokens = tkz.AllTokens();
+	std::any hello;
+	hello = std::string("asdf");
+	std::cout << hello.type().name();
 	for (Token t : tokens) {
-		std::cout << t.GetValue().type().name() << std::endl;
+		if (t.GetValue().type().name() == "int") {
+			std::cout << std::any_cast<int>(t.GetValue()) << std::endl;
+		}
+		else if (t.GetValue().type().name() == "char") {
+			std::cout << std::any_cast<char>(t.GetValue()) << std::endl;
+		}
+		else if (t.GetValue().type().name() == "std::string") {
+			std::cout << std::any_cast<std::string>(t.GetValue()) << std::endl;
+		}
 	}
 }
 
