@@ -127,9 +127,17 @@ std::optional<Token> Tokenizer::nextToken() {
 				case '<':
 					current_state = DFAState::LESS_THAN_STATE;
 					break;
-				//还要添加大括号和感叹号
+				case '{':
+					current_state = DFAState::LEFTBRACE_STATE;
+					break;
+				case '}':
+					current_state = DFAState::RIGHTBRACE_STATE;
+					break;
+				case '!':
+					current_state = DFAState::EXCLAMATION_SIGH_STATE;
+					break;
 
-					// 不接受的字符导致的不合法的状态
+				// 不接受的字符导致的不合法的状态
 				default:
 					invalid = true;
 					break;
