@@ -203,23 +203,11 @@ std::optional<Token> Tokenizer::nextToken() {
 
 			if (!current_char.has_value()) {
 				std::string str = ss.str();
-				if (str == "begin") {
-					return Token(TokenType::BEGIN, str);
-				}
-				else if (str == "end") {
-					return std::make_pair(std::make_optional<Token>(TokenType::END, str, pos, currentPos()), std::optional<CompilationError>());
-				}
-				else if (str == "var") {
-					return std::make_pair(std::make_optional<Token>(TokenType::VAR, str, pos, currentPos()), std::optional<CompilationError>());
-				}
-				else if (str == "const") {
-					return std::make_pair(std::make_optional<Token>(TokenType::CONST, str, pos, currentPos()), std::optional<CompilationError>());
-				}
-				else if (str == "print") {
-					return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()), std::optional<CompilationError>());
+				if (ReservedWords.find(str) != ReservedWords.end()) {
+					return Token(TokenType::RESERVED_WORD, str);
 				}
 				else {
-					return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER, str, pos, currentPos()), std::optional<CompilationError>());
+					return Token(TokenType::IDENTIFIER, str);
 				}
 			}
 			auto ch = current_char.value();
@@ -229,25 +217,11 @@ std::optional<Token> Tokenizer::nextToken() {
 			else {
 				unreadLast();
 				std::string str = ss.str();
-				if (str == "begin") {
-					return std::make_pair(std::make_optional<Token>(TokenType::BEGIN, str, pos, currentPos()), std::optional<CompilationError>());
-				}
-				else if (str == "end") {
-					return std::make_pair(std::make_optional<Token>(TokenType::END, str, pos, currentPos()), std::optional<CompilationError>());
-				}
-				else if (str == "var") {
-
-					return std::make_pair(std::make_optional<Token>(TokenType::VAR, str, pos, currentPos()), std::optional<CompilationError>());
-				}
-				else if (str == "const") {
-					return std::make_pair(std::make_optional<Token>(TokenType::CONST, str, pos, currentPos()), std::optional<CompilationError>());
-				}
-				else if (str == "print") {
-					return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()), std::optional<CompilationError>());
+				if (ReservedWords.find(str) != ReservedWords.end()) {
+					return Token(TokenType::RESERVED_WORD, str);
 				}
 				else {
-					//std::pair<uint64_t, uint64_t> tmp = currentPos();
-					return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER, str, pos, currentPos()), std::optional<CompilationError>());
+					return Token(TokenType::IDENTIFIER, str);
 				}
 			}
 

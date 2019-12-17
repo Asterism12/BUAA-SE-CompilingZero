@@ -1,28 +1,12 @@
 #pragma once
 #include <any>
+#include <set>
+#include <string>
 enum class TokenType {
 	NULL_TOKEN,
 	UNSIGNED_INTEGER,
 	IDENTIFIER,
-	VOID,//reserved-word
-	CONST,
-	INT,
-	DOUBLE,
-	CHAR,
-	STRUCT,
-	IF,
-	ELSE,
-	SWITCH,
-	CASE,
-	DEFAULT,
-	WHILE,
-	FOR,
-	DO,
-	RETURN,
-	BREAK,
-	CONTINUE,
-	PRINT,
-	SCAN,
+	RESERVED_WORD,
 	PLUS_SIGN,
 	MINUS_SIGN,
 	MULTIPLICATION_SIGN,
@@ -40,7 +24,29 @@ enum class TokenType {
 	EXCLAMATION_SIGH_STATE
 };
 
-class Token final{
+std::set<std::string> ReservedWords = {
+"void",
+"const",
+"int",
+"double",
+"char",
+"struct",
+"if",
+"else",
+"switch",
+"case",
+"default",
+"while",
+"for",
+"do",
+"return",
+"break",
+"continue",
+"print",
+"scan"
+};
+
+class Token final {
 public:
 	Token(TokenType type, std::any value) :_type(type), _value(value) {};
 	TokenType GetType() const { return _type; };
