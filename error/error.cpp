@@ -5,6 +5,6 @@ void Error::printErrorMessage() {
 		std::cout << "Error : " + _errorMessage + " ." << std::endl;
 	}
 	else {
-		std::cout << "Error : " + _errorMessage + "in line" << _lineNumber + " ." << std::endl;
+		std::cout << "Error : " + _errorMessage + " in line " << _lineNumber << " ." << std::endl;
 	}
 }

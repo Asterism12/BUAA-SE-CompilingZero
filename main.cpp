@@ -9,9 +9,14 @@
 
 void compiler(std::istream& input, std::ostream& output) {
 	Tokenizer tkz(input);
-	std::vector<Token> tokens = tkz.AllTokens();
-	for (Token t : tokens) {
-		std::cout << t.GetValueString() << std::endl;
+	try {
+		std::vector<Token> tokens = tkz.AllTokens();
+		for (Token t : tokens) {
+			std::cout << t.GetValueString() << std::endl;
+		}
+	}
+	catch (Error err) {
+		err.printErrorMessage();
 	}
 }
 

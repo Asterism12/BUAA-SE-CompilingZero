@@ -1,4 +1,6 @@
 #pragma once
+#include "error/error.h"
+
 #include <any>
 #include <set>
 #include <string>
@@ -46,6 +48,7 @@ public:
 			return std::to_string(std::any_cast<int32_t>(_value));
 		}
 		catch (const std::bad_any_cast&) {
+			Error("No suitable cast for token value.");
 		}
 		return "Invalid";
 	}
