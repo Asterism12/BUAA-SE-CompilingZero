@@ -120,7 +120,7 @@ std::optional<Token> Tokenizer::nextToken() {
 					current_state = DFAState::RIGHTBRACKET_STATE;
 					break;
 
-				//在min0的基础上添加了2种状态
+				//在min0的基础上添加了6种状态,未完成：16进制，整数的溢出
 				case '>':
 					current_state = DFAState::GREATER_THAN_STATE;
 					break;
@@ -136,6 +136,8 @@ std::optional<Token> Tokenizer::nextToken() {
 				case '!':
 					current_state = DFAState::EXCLAMATION_SIGH_STATE;
 					break;
+				case ',':
+					current_state = DFAState::COMMA_STATE;
 
 				// 不接受的字符导致的不合法的状态
 				default:
@@ -256,6 +258,10 @@ std::optional<Token> Tokenizer::nextToken() {
 		}
 
 		//c0文法
+		case DFAState::COMMA_STATE: {
+			unreadLast();
+			return Token(TokenType::COMMA_SIGH, ',');
+		}
 		case DFAState::LEFTBRACE_STATE:{
 			unreadLast();
 			return Token(TokenType::LEFT_BRACE, '{');
