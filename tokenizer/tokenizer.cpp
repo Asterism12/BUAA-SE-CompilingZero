@@ -224,8 +224,88 @@ std::optional<Token> Tokenizer::nextToken() {
 					return Token(TokenType::IDENTIFIER, str);
 				}
 			}
-
 			break;
+		}
+		case DFAState::PLUS_SIGN_STATE: {
+			unreadLast(); // Yes, we unread last char even if it's an EOF.
+			return Token(TokenType::PLUS_SIGN,'+');
+		}
+		case DFAState::MINUS_SIGN_STATE: {
+			unreadLast();
+			return Token(TokenType::MINUS_SIGN, '-');		
+		}
+		case DFAState::MULTIPLICATION_SIGN_STATE: {
+			unreadLast(); 
+			return Token(TokenType::MULTIPLICATION_SIGN, '*');			
+		}
+		case DFAState::DIVISION_SIGN_STATE: {
+			unreadLast(); 
+			return Token(TokenType::DIVISION_SIGN, '/');
+		}
+		case DFAState::SEMICOLON_STATE: {
+			unreadLast(); 
+			return Token(TokenType::SEMICOLON, ';');
+		}
+		case DFAState::LEFTBRACKET_STATE: {
+			unreadLast(); 
+			return Token(TokenType::LEFT_BRACKET, '(');
+		}
+		case DFAState::RIGHTBRACKET_STATE: {
+			unreadLast(); 
+			return Token(TokenType::RIGHT_BRACKET, ')');
+		}
+
+		//c0ÎÄ·¨
+		case DFAState::LEFTBRACE_STATE:{
+			unreadLast();
+			return Token(TokenType::LEFT_BRACE, '{');
+		}
+		case DFAState::RIGHTBRACE_STATE: {
+			unreadLast();
+			return Token(TokenType::RIGHT_BRACE, '}');
+		}
+		case DFAState::EQUAL_SIGN_STATE: {
+			//= & ==
+			auto ch = current_char.value();
+			if (ch == '=') {
+				return Token(TokenType::EQUAL_SIGN, "==");
+			}
+			else {
+				unreadLast();
+				return Token(TokenType::ASSIGNMENT_SIGN, '=');
+			}
+		}
+		case DFAState::GREATER_THAN_STATE: {
+			//> & >=
+			auto ch = current_char.value();
+			if (ch == '=') {
+				return Token(TokenType::GREATER_THAN_EQUAL_SIGH,">=");
+			}
+			else {
+				unreadLast();
+				return Token(TokenType::GREATER_THAN_SIGH, '{');
+			}
+		}
+		case DFAState::LESS_THAN_STATE: {
+			//< & <=
+			auto ch = current_char.value();
+			if (ch == '=') {
+				return Token(TokenType::LESS_THAN_EQUAL_SIGH, "<=");
+			}
+			else {
+				unreadLast();
+				return Token(TokenType::LESS_THAN_SIGH, '<');
+			}
+		}
+		case DFAState::EXCLAMATION_SIGH_STATE: {
+			//!=
+			auto ch = current_char.value();
+			if (ch == '=') {
+				return Token(TokenType::UNEQUAL_SIGN, "!=");
+			}
+			else {
+				throw Error("InvalidInputErr");
+			}
 		}
 		default:
 			break;
