@@ -1,4 +1,25 @@
 #include "tokenizer/tokenizer.h"
+std::set<std::string> ReservedWords = {
+"void",
+"const",
+"int",
+"double",
+"char",
+"struct",
+"if",
+"else",
+"switch",
+"case",
+"default",
+"while",
+"for",
+"do",
+"return",
+"break",
+"continue",
+"print",
+"scan"
+};
 
 std::uint32_t htoi(std::string h) {
 	if (h.size() <= 2 || h[0] != '0' || (h[1] != 'x' && h[1] != 'X')) {
@@ -270,7 +291,7 @@ std::optional<Token> Tokenizer::nextToken() {
 
 			if (!current_char.has_value()) {
 				std::string str = ss.str();
-				if (c0::ReservedWords.find(str) != c0::ReservedWords.end()) {
+				if (ReservedWords.find(str) != ReservedWords.end()) {
 					return Token(TokenType::RESERVED_WORD, str);
 				}
 				else {
@@ -284,7 +305,7 @@ std::optional<Token> Tokenizer::nextToken() {
 			else {
 				unreadLast();
 				std::string str = ss.str();
-				if (c0::ReservedWords.find(str) != c0::ReservedWords.end()) {
+				if (ReservedWords.find(str) != ReservedWords.end()) {
 					return Token(TokenType::RESERVED_WORD, str);
 				}
 				else {

@@ -28,30 +28,6 @@ enum class TokenType {
 	HEXADECIMAL_SIGH
 };
 
-namespace c0 {
-	std::set<std::string> ReservedWords = {
-	"void",
-	"const",
-	"int",
-	"double",
-	"char",
-	"struct",
-	"if",
-	"else",
-	"switch",
-	"case",
-	"default",
-	"while",
-	"for",
-	"do",
-	"return",
-	"break",
-	"continue",
-	"print",
-	"scan"
-	};
-}
-
 class Token final {
 public:
 	Token(TokenType type, std::any value) :_type(type), _value(value) {};

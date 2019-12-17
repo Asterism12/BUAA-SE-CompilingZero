@@ -12,7 +12,7 @@ void compiler(std::istream& input, std::ostream& output) {
 	std::vector<Token> tokens = tkz.AllTokens();
 	std::any hello;
 	hello = std::string("asdf");
-	std::cout << hello.type().name();
+	std::cout << hello.type().name() << std::endl;
 	for (Token t : tokens) {
 		if (t.GetValue().type().name() == "int") {
 			std::cout << std::any_cast<int>(t.GetValue()) << std::endl;
