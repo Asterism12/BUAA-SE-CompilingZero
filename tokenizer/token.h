@@ -29,25 +29,25 @@ enum class TokenType {
 };
 
 std::set<std::string> ReservedWords = {
-"void",
-"const",
-"int",
-"double",
-"char",
-"struct",
-"if",
-"else",
-"switch",
-"case",
-"default",
-"while",
-"for",
-"do",
-"return",
-"break",
-"continue",
-"print",
-"scan"
+	"void",
+	"const",
+	"int",
+	"double",
+	"char",
+	"struct",
+	"if",
+	"else",
+	"switch",
+	"case",
+	"default",
+	"while",
+	"for",
+	"do",
+	"return",
+	"break",
+	"continue",
+	"print",
+	"scan"
 };
 
 class Token final {

@@ -3,9 +3,14 @@
 #include <iostream>
 #include <string.h>
 #include "error/error.h"
+#include "tokenizer/tokenizer.h"
 
 void compiler(std::istream& input, std::ostream& output) {
-
+	Tokenizer tkz(input);
+	std::vector<Token> tokens = tkz.AllTokens();
+	for (Token t : tokens) {
+		std::cout << t.GetValue().type().name() << std::endl;
+	}
 }
 
 void assembler(std::istream& input, std::ostream& output) {
