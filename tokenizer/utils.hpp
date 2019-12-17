@@ -18,6 +18,8 @@ namespace miniplc0 {
 	IS_FUNC(isupper);
 	IS_FUNC(islower);
 	IS_FUNC(isdigit);
-}
 
-//直接把miniplc0的复制过来了，直接保留原namespace，以示尊重
+	inline bool ishexadecimal(char ch) {
+		return isdigit(ch) || ('a' <= ch && ch <= 'f') || ('A' <= ch && ch <= 'f');
+	}
+}

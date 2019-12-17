@@ -1,6 +1,21 @@
 #include "tokenizer.h"
 #include "../error/error.h"
 #include "utils.hpp"
+
+std::uint32_t htoi(std::string h) {
+	if (h.size() <= 2 || h[0] != '0' || (h[1] != 'x' && h[1] != 'X')) {
+		throw std::invalid_argument("received invalid argument");
+	}
+	std::uint64_t x = 1, ret = 0;
+	for (int i = h.size() - 1; i >= 2; i--) {
+		ret += h[i] * x;
+		if (ret > INT_MAX) {
+			throw std::out_of_range("out of range");
+		}
+	}
+	return ret;
+}
+
 void Tokenizer::readAll() {
 	if (_initialized)
 		return;
@@ -158,7 +173,7 @@ std::optional<Token> Tokenizer::nextToken() {
 			// 如果当前已经读到了文件尾，则解析已经读到的字符串为整数
 			//     解析成功则返回无符号整数类型的token，否则返回编译错误
 			// 如果读到的字符是数字，则存储读到的字符
-			// 如果读到的是字母，则存储读到的字符，并切换状态到标识符
+			// 如果读到的是字母，检测是否为x以及他的位置符合十六进制数则转为十六进制数状态，否则编译错误
 			// 如果读到的字符不是上述情况之一，则回退读到的字符，并解析已经读到的字符串为整数
 			//     解析成功则返回无符号整数类型的token，否则返回编译错误
 			if (!current_char.has_value()) {
@@ -182,12 +197,49 @@ std::optional<Token> Tokenizer::nextToken() {
 			}
 			else if (miniplc0::isalpha(ch)) {
 				ss << ch;
-				current_state = DFAState::IDENTIFIER_STATE;
+				if (ss.str().size() == 2 && (ch == 'x' || ch == 'X')) {
+					current_state = DFAState::HEXADECIMAL_STATE;
+				}
+				else {
+					throw Error("InvalidInputErr", _ptr.first + 1);
+				}
 			}
 			else {
 				unreadLast();
 				try {
 					int ret = std::stoi(ss.str());
+					return Token(TokenType::UNSIGNED_INTEGER, ret);
+				}
+				catch (std::invalid_argument) {
+					throw Error("InvalidAgumentErr", _ptr.first + 1);
+				}
+				catch (std::out_of_range) {
+					throw Error("IntegerOverflowErr", _ptr.first + 1);
+				}
+			}
+			break;
+		}
+		case DFAState::HEXADECIMAL_STATE: {
+			if (!current_char.has_value()) {
+				try {
+					int ret = htoi(ss.str());
+					return Token(TokenType::UNSIGNED_INTEGER, ret);
+				}
+				catch (std::invalid_argument) {
+					throw Error("InvalidAgumentErr", _ptr.first + 1);
+				}
+				catch (std::out_of_range) {
+					throw Error("IntegerOverflowErr", _ptr.first + 1);
+				}
+			}
+			auto ch = current_char.value();
+			if (miniplc0::ishexadecimal(ch)) {
+				ss << ch;
+			}
+			else {
+				unreadLast();
+				try {
+					int ret = htoi(ss.str());
 					return Token(TokenType::UNSIGNED_INTEGER, ret);
 				}
 				catch (std::invalid_argument) {
@@ -210,9 +262,6 @@ std::optional<Token> Tokenizer::nextToken() {
 				std::string str = ss.str();
 				if (ReservedWords.find(str) != ReservedWords.end()) {
 					return Token(TokenType::RESERVED_WORD, str);
-				}
-				else if (str[0] == '0' && str[1] == 'x') {
-					//转16进制
 				}
 				else {
 					return Token(TokenType::IDENTIFIER, str);
