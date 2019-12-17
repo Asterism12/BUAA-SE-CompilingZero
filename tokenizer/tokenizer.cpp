@@ -120,7 +120,7 @@ std::optional<Token> Tokenizer::nextToken() {
 					current_state = DFAState::RIGHTBRACKET_STATE;
 					break;
 
-				//在min0的基础上添加了6种状态,未完成：16进制，整数的溢出
+				//在min0的基础上添加了6种状态,未完成：16进制
 				case '>':
 					current_state = DFAState::GREATER_THAN_STATE;
 					break;
@@ -162,6 +162,9 @@ std::optional<Token> Tokenizer::nextToken() {
 			// 如果读到的字符不是上述情况之一，则回退读到的字符，并解析已经读到的字符串为整数
 			//     解析成功则返回无符号整数类型的token，否则返回编译错误
 			if (!current_char.has_value()) {
+				if (ss.str()[0] = '0') {
+					throw Error("StartWithZeroErr",_ptr.first);
+				}
 				try {
 					int ret = std::stoi(ss.str());
 					return Token(TokenType::UNSIGNED_INTEGER, ret);
