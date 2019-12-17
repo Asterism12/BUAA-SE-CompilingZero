@@ -146,7 +146,7 @@ std::optional<Token> Tokenizer::nextToken() {
 				}
 				if (invalid) {
 					unreadLast();
-					throw Error("InvalidInputErr");
+					throw Error("InvalidInputErr", _ptr.first + 1);
 				}
 				// 如果读到的字符导致了状态的转移，说明它是一个token的第一个字符
 				if (current_state != DFAState::INITIAL_STATE) // ignore white spaces
@@ -163,17 +163,17 @@ std::optional<Token> Tokenizer::nextToken() {
 			//     解析成功则返回无符号整数类型的token，否则返回编译错误
 			if (!current_char.has_value()) {
 				if (ss.str()[0] = '0') {
-					throw Error("StartWithZeroErr",_ptr.first);
+					throw Error("StartWithZeroErr", _ptr.first + 1);
 				}
 				try {
 					int ret = std::stoi(ss.str());
 					return Token(TokenType::UNSIGNED_INTEGER, ret);
 				}
 				catch (std::invalid_argument) {
-					throw Error("InvalidAgumentErr");
+					throw Error("InvalidAgumentErr", _ptr.first + 1);
 				}
 				catch (std::out_of_range) {
-					throw Error("IntegerOverflowErr");
+					throw Error("IntegerOverflowErr", _ptr.first + 1);
 				}
 			}
 			auto ch = current_char.value();
@@ -191,10 +191,10 @@ std::optional<Token> Tokenizer::nextToken() {
 					return Token(TokenType::UNSIGNED_INTEGER, ret);
 				}
 				catch (std::invalid_argument) {
-					throw Error("InvalidAgumentErr");
+					throw Error("InvalidAgumentErr", _ptr.first + 1);
 				}
 				catch (std::out_of_range) {
-					throw Error("IntegerOverflowErr");
+					throw Error("IntegerOverflowErr", _ptr.first + 1);
 				}
 			}
 			break;
@@ -313,7 +313,7 @@ std::optional<Token> Tokenizer::nextToken() {
 				return Token(TokenType::UNEQUAL_SIGN, "!=");
 			}
 			else {
-				throw Error("InvalidInputErr");
+				throw Error("InvalidInputErr", _ptr.first + 1);
 			}
 		}
 		default:
