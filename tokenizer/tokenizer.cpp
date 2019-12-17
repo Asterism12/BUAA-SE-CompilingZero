@@ -77,7 +77,9 @@ std::vector<Token> Tokenizer::AllTokens() {
 		if (p.has_value()) {
 			result.emplace_back(p.value());
 		}
-		return result;
+		else {
+			return result;
+		}
 	}
 }
 
@@ -191,15 +193,15 @@ std::optional<Token> Tokenizer::nextToken() {
 					invalid = true;
 					break;
 				}
-				if (invalid) {
-					unreadLast();
-					throw Error("InvalidInputErr", _ptr.first + 1);
-				}
-				// 如果读到的字符导致了状态的转移，说明它是一个token的第一个字符
-				if (current_state != DFAState::INITIAL_STATE) // ignore white spaces
-					ss << ch; // 存储读到的字符
-				break;
 			}
+			if (invalid) {
+				unreadLast();
+				throw Error("InvalidInputErr", _ptr.first + 1);
+			}
+			// 如果读到的字符导致了状态的转移，说明它是一个token的第一个字符
+			if (current_state != DFAState::INITIAL_STATE) // ignore white spaces
+				ss << ch; // 存储读到的字符
+			break;
 		}
 		case DFAState::UNSIGNED_INTEGER_STATE: {
 			// 如果当前已经读到了文件尾，则解析已经读到的字符串为整数

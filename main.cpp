@@ -12,7 +12,18 @@ void compiler(std::istream& input, std::ostream& output) {
 	try {
 		std::vector<Token> tokens = tkz.AllTokens();
 		for (Token t : tokens) {
-			std::cout << t.GetValueString() << std::endl;
+			if (t.GetType() == TokenType::RESERVED_WORD) {
+				std::cout << t.GetValueString() << "\tRESERVED_WORD" << std::endl;
+			}
+			else if (t.GetType() == TokenType::IDENTIFIER) {
+				std::cout << t.GetValueString() << "\tIDENTIFIER" << std::endl;
+			}
+			else if (t.GetType() == TokenType::UNSIGNED_INTEGER) {
+				std::cout << t.GetValueString() << "\tUNSIGNED_INTEGER" << std::endl;
+			}
+			else {
+				std::cout << t.GetValueString() << "\tSIGN" << std::endl;
+			}
 		}
 	}
 	catch (Error err) {
