@@ -39,7 +39,8 @@ std::uint32_t htoi(std::string h) {
 		else {
 			throw std::invalid_argument("received invalid argument");
 		}
-		ret += (h[i]) * x;
+		ret += tmp * x;
+		x *= 16;
 		if (ret > INT_MAX) {
 			throw std::out_of_range("out of range");
 		}
