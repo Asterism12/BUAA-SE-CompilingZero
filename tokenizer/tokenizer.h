@@ -38,7 +38,7 @@ private:
 	std::pair<uint64_t, uint64_t> _ptr;
 
 	std::optional<Token> nextToken();
-	void Tokenizer::readAll() {}
+	void Tokenizer::readAll();
 
 	std::pair<uint64_t, uint64_t> nextPos();
 	std::pair<uint64_t, uint64_t> Tokenizer::previousPos();
