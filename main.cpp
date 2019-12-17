@@ -10,19 +10,8 @@
 void compiler(std::istream& input, std::ostream& output) {
 	Tokenizer tkz(input);
 	std::vector<Token> tokens = tkz.AllTokens();
-	std::any hello;
-	hello = std::string("asdf");
-	std::cout << hello.type().name() << std::endl;
 	for (Token t : tokens) {
-		if (t.GetValue().type().name() == "int") {
-			std::cout << std::any_cast<int>(t.GetValue()) << std::endl;
-		}
-		else if (t.GetValue().type().name() == "char") {
-			std::cout << std::any_cast<char>(t.GetValue()) << std::endl;
-		}
-		else if (t.GetValue().type().name() == "std::string") {
-			std::cout << std::any_cast<std::string>(t.GetValue()) << std::endl;
-		}
+		std::cout << t.GetValueString() << std::endl;
 	}
 }
 

@@ -33,6 +33,23 @@ public:
 	Token(TokenType type, std::any value) :_type(type), _value(value) {};
 	TokenType GetType() const { return _type; };
 	std::any GetValue() const { return _value; };
+	std::string GetValueString() const {
+		try {
+			return std::any_cast<std::string>(_value);
+		}
+		catch (const std::bad_any_cast&) {}
+		try {
+			return std::string(1, std::any_cast<char>(_value));
+		}
+		catch (const std::bad_any_cast&) {}
+		try {
+			return std::to_string(std::any_cast<int32_t>(_value));
+		}
+		catch (const std::bad_any_cast&) {
+			Error("No suitable cast for token value.");
+		}
+		return "Invalid";
+	}
 private:
 	TokenType _type;
 	std::any _value;
