@@ -1,7 +1,8 @@
 #pragma once
 #include <cstdint>
 enum class Operation {
-	IPUSH
+	ipush,
+	iadd
 };
 
 class Instruction final {
