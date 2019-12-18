@@ -82,7 +82,12 @@ char Analyser::analyse_type_specifier() {
 //<initializer> ::= 
 //	'=' < expression >
 bool Analyser::analyse_initializer(char type) {
-
+	auto next = nextToken();
+	if (!next.has_value() || !(next.value().GetType() == TokenType::ASSIGNMENT_SIGN)){
+		return false;
+	}
+	analyse_expression();
+	return true;
 }
 
 void Analyser::initializeVar(char type) {
@@ -94,6 +99,10 @@ void Analyser::initializeVar(char type) {
 	default:
 		break;
 	}
+}
+
+void Analyser::analyse_expression() {
+
 }
 
 void Analyser::analyse_function_definition() {

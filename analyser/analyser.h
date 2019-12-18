@@ -32,6 +32,7 @@ private:
 	void analyse_function_definition();
 	char analyse_type_specifier();
 	bool analyse_initializer(char type);
+	void analyse_expression();
 
 	//tokenœ‡πÿ
 	std::optional<Token> nextToken();
