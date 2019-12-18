@@ -1,5 +1,5 @@
 #pragma once
-#include <sstream>
+#include <cstdint>
 enum class Operation {
 	ILL,
 	LIT,
