@@ -13,16 +13,16 @@ void compiler(std::istream& input, std::ostream& output) {
 		std::vector<Token> tokens = tkz.AllTokens();
 		for (Token t : tokens) {
 			if (t.GetType() == TokenType::RESERVED_WORD) {
-				std::cout << t.GetValueString() << "\tRESERVED_WORD" << std::endl;
+				std::cout << std::any_cast<std::string>(t.GetValue()) << "\treserved word" << std::endl;
 			}
 			else if (t.GetType() == TokenType::IDENTIFIER) {
-				std::cout << t.GetValueString() << "\tIDENTIFIER" << std::endl;
+				std::cout << std::any_cast<std::string>(t.GetValue()) << "\tidentifier" << std::endl;
 			}
 			else if (t.GetType() == TokenType::UNSIGNED_INTEGER) {
-				std::cout << t.GetValueString() << "\tUNSIGNED_INTEGER" << std::endl;
+				std::cout << std::any_cast<int>(t.GetValue()) << "\tinteger" << std::endl;
 			}
 			else {
-				std::cout << t.GetValueString() << "\tSIGN" << std::endl;
+				std::cout << std::any_cast<char>(t.GetValue()) << "\tsign" << std::endl;
 			}
 		}
 	}

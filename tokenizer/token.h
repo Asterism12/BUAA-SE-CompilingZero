@@ -35,6 +35,7 @@ public:
 	Token(TokenType type, std::any value) :_type(type), _value(value) {};
 	TokenType GetType() const { return _type; };
 	std::any GetValue() const { return _value; };
+	/*
 	std::string GetValueString() const {
 		try {
 			return std::any_cast<std::string>(_value);
@@ -52,6 +53,7 @@ public:
 		}
 		return "Invalid";
 	}
+	*/
 private:
 	TokenType _type;
 	std::any _value;
