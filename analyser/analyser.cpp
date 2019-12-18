@@ -100,7 +100,7 @@ void Analyser::initializeVar(char type) {
 	switch (type)
 	{
 	case 'i':
-		_instructions[_currentFunction].push_back(Instruction(Operation::IPUSH, 0));
+		_instructions[_currentFunction].push_back(Instruction(Operation::ipush, 0));
 		break;
 	default:
 		break;
@@ -113,16 +113,17 @@ void Analyser::analyse_expression() {
 
 	while (next.has_value()) {
 		auto type = next.value().GetType();
+		analyse_multiplicative_expression();
 		switch (type)
 		{
 		case TokenType::PLUS_SIGN:
-			analyse_multiplicative_expression();
-
+			_instructions[_currentFunction].push_back(Instruction(Operation::iadd));
 			break;
 		case TokenType::MINUS_SIGN:
+			_instructions[_currentFunction].push_back(Instruction(Operation::isub));
 			break;
 		default:
-			break;
+			return;
 		}
 	}
 	return;
