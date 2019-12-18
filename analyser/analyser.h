@@ -10,7 +10,7 @@
 class Analyser final {
 public:
 	Analyser(std::vector<Token> v)
-		: _tokens(std::move(v)), _offset(0), _instructions({}) {}
+		: _tokens(std::move(v)), _offset(0), _instructions({}), _globalIndex(0){}
 
 	// 唯一接口
 	void Analyse();
@@ -18,8 +18,8 @@ public:
 	//程序结束后结果保存在这些数据结构中
 	//常量表
 	std::vector<std::any> _consts;
-	//全局变量表
-	std::vector<std::string> _globalVars;
+	//全局变量表，名字-偏移
+	std::map<std::string, std::int32_t> _globalVars;
 	//函数表，名字-函数序号
 	std::map<std::string, std::int32_t> _functions;
 	//函数对应的指令队列，函数序号-指令队列
@@ -27,15 +27,19 @@ public:
 private:
 	// 所有的递归子程序
 
-
+	//token相关
 	std::optional<Token> nextToken();
 	void unreadToken();
-	void addVariable(const Token&);
-	int32_t getIndex(const std::string&);
-
 	std::vector<Token> _tokens;
 	std::size_t _offset;
 
-	//局部变量表
-	std::vector<std::string> _localVars;
+	//局部变量表，名字-偏移
+	std::map<std::string, std::int32_t> _localVars;
+	std::optional<std::int32_t> getIndexInLocal(const std::string&);
+	std::int32_t _localIndex;
+	void addVariable(const Token&);
+
+	//全局辅助变量及函数
+	std::optional<std::int32_t> getIndexInGlobal(const std::string&);
+	std::int32_t _globalIndex;
 };
