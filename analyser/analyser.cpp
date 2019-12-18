@@ -15,47 +15,57 @@ void Analyser::analyse_C0_sprogram() {
 void Analyser::analyse_variable_declaration() {
 	while (true) {
 		auto next = nextToken();
-		if (!next.has_value()) {
+		if (!next.has_value()|| !(next.value().GetType() == TokenType::RESERVED_WORD)) {
 			return;
 		}
-		if (!(next.value().GetType() == TokenType::RESERVED_WORD)) {
-			return;
-		}
+		//const
 		if (std::any_cast<std::string>(next.value().GetValue()) == "const") {
 			char type = analyse_type_specifier();
-			
-			if (!analyse_init_declarator_list()) {
-				throw Error("Missing < init - declarator - list>", next.value().GetLine());
+			do {
+				//init - declarator - list
+				next = nextToken();
+				if (!next.has_value() || !(next.value().GetType() == TokenType::IDENTIFIER)) {
+					throw Error("Missing < init - declarator - list>");
+				}
+				addVariable(next.value());
+				bool has_initializer = analyse_initializer(type);
+				if (!has_initializer) {
+					throw Error("Missing <initializer>");
+				}
+				next = nextToken();
+			} while (next.value().GetType() != TokenType::COMMA_SIGH);
+			if (next.value().GetType() != TokenType::SEMICOLON) {
+				throw Error("Missing ';'");
 			}
-			switch (type)
-			{
-			case 'i':
-				
-			default:
-				throw Error("Missing <type - specifier>", next.value().GetLine());
-				break;
-			}
+			return;
 		}
+		//non-const
 		else {
 			unreadToken();
 			char type = analyse_type_specifier();
-			analyse_init_declarator_list();
-			switch (type)
-			{
-			case 'i':
-
-			default:
-				throw Error("Missing <type - specifier>", next.value().GetLine());
-				break;
+			do {
+				////init - declarator - list
+				next = nextToken();
+				if (!next.has_value() || !(next.value().GetType() == TokenType::IDENTIFIER)) {
+					throw Error("Missing < init - declarator - list>");
+				}
+				addVariable(next.value());
+				bool has_initializer = analyse_initializer(type);
+				if (!has_initializer) {
+					initializeVar(type);
+				}
+				next = nextToken();
+			} while (next.value().GetType() != TokenType::COMMA_SIGH);
+			if (next.value().GetType() != TokenType::SEMICOLON) {
+				throw Error("Missing ';'");
 			}
+			return;
 		}
 	}
 }
 
-void Analyser::analyse_function_definition() {
-
-}
-
+//<type-specifier> ::= 
+//	<simple-type-specifier>
 char Analyser::analyse_type_specifier() {
 	auto next = nextToken();
 	if (!next.has_value()) {
@@ -65,11 +75,28 @@ char Analyser::analyse_type_specifier() {
 		return 'i';
 	}
 	else {
-		throw Error("Wrong  <type - specifier>", next.value().GetLine());
+		throw Error("Wrong identifier type", next.value().GetLine());
 	}
 }
 
-bool Analyser::analyse_init_declarator_list() {
+//<initializer> ::= 
+//	'=' < expression >
+bool Analyser::analyse_initializer(char type) {
+
+}
+
+void Analyser::initializeVar(char type) {
+	switch (type)
+	{
+	case 'i':
+		_instructions[_currentFunction].push_back(Instruction(Operation::IPUSH, 0));
+		break;
+	default:
+		break;
+	}
+}
+
+void Analyser::analyse_function_definition() {
 
 }
 

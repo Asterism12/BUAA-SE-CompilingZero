@@ -11,7 +11,7 @@
 class Analyser final {
 public:
 	Analyser(std::vector<Token> v)
-		: _tokens(std::move(v)), _offset(0), _instructions({}), _globalIndex(0){}
+		: _tokens(std::move(v)), _offset(0), _globalIndex(0), _currentFunction(0), _localIndex(0) {};
 
 	// 唯一接口
 	void Analyse();
@@ -31,7 +31,7 @@ private:
 	void analyse_variable_declaration();
 	void analyse_function_definition();
 	char analyse_type_specifier();
-	bool analyse_init_declarator_list();
+	bool analyse_initializer(char type);
 
 	//token相关
 	std::optional<Token> nextToken();
@@ -43,7 +43,9 @@ private:
 	std::map<std::string, std::int32_t> _localVars;
 	std::optional<std::int32_t> getIndexInLocal(const std::string&);
 	std::int32_t _localIndex;
+	std::int32_t _currentFunction;
 	void addVariable(const Token&);
+	void initializeVar(char type);
 
 	//全局辅助变量及函数
 	std::optional<std::int32_t> getIndexInGlobal(const std::string&);

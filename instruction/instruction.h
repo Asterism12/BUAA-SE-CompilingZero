@@ -1,15 +1,7 @@
 #pragma once
 #include <cstdint>
 enum class Operation {
-	ILL,
-	LIT,
-	LOD,
-	STO,
-	ADD,
-	SUB,
-	MUL,
-	DIV,
-	WRT
+	IPUSH
 };
 
 class Instruction final {
