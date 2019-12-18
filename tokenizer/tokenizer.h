@@ -40,13 +40,13 @@ private:
 	std::istream& _rdr;
 	bool _initialized;
 	std::vector<std::string> _lines_buffer;
-	std::pair<uint64_t, uint64_t> _ptr;
+	std::pair<std::uint64_t, std::uint64_t> _ptr;
 
 	std::optional<Token> nextToken();
 	void Tokenizer::readAll();
 
-	std::pair<uint64_t, uint64_t> nextPos();
-	std::pair<uint64_t, uint64_t> Tokenizer::previousPos();
+	std::pair<std::uint64_t, std::uint64_t> nextPos();
+	std::pair<std::uint64_t, std::uint64_t> Tokenizer::previousPos();
 
 	std::optional<char> nextChar();
 	bool isEOF();
