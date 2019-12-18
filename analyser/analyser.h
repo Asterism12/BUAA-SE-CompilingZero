@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 #include <map>
+#include <string>
 class Analyser final {
 public:
 	Analyser(std::vector<Token> v)
@@ -26,6 +27,11 @@ public:
 	std::map<std::int32_t, std::vector<Instruction>> _instructions;
 private:
 	// 所有的递归子程序
+	void analyse_C0_sprogram();
+	void analyse_variable_declaration();
+	void analyse_function_definition();
+	char analyse_type_specifier();
+	bool analyse_init_declarator_list();
 
 	//token相关
 	std::optional<Token> nextToken();

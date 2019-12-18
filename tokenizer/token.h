@@ -36,6 +36,7 @@ public:
 		:_type(type), _value(value), _lineNumber(lineNumber) {};
 	TokenType GetType() const { return _type; };
 	std::any GetValue() const { return _value; };
+	uint64_t GetLine() const { return _lineNumber; };
 	/*
 	std::string GetValueString() const {
 		try {
