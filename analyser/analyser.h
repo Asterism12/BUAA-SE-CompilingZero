@@ -11,7 +11,8 @@
 class Analyser final {
 public:
 	Analyser(std::vector<Token> v)
-		: _tokens(std::move(v)), _offset(0), _globalIndex(0), _currentFunction(0), _localIndex(0) {};
+		: _tokens(std::move(v)), _offset(0), _globalIndex(0),
+		_currentFunction(0), _localIndex(0), _currentLine(0) {};
 
 	// Î¨Ò»½Ó¿Ú
 	void Analyse();
@@ -49,6 +50,7 @@ private:
 	std::optional<std::int32_t> getIndexInLocal(const std::string&);
 	std::int32_t _localIndex;
 	std::int32_t _currentFunction;
+	std::int32_t _currentLine;
 	void addVariable(const Token&);
 	void initializeVar(char type);
 

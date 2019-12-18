@@ -25,17 +25,20 @@ void Analyser::analyse_variable_declaration() {
 				//init - declarator - list
 				next = nextToken();
 				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
-					throw Error("Missing < init - declarator - list>");
+					throw Error("Missing < init - declarator - list>", _currentLine);
 				}
 				addVariable(next.value());
 				bool has_initializer = analyse_initializer(type);
 				if (!has_initializer) {
-					throw Error("Missing <initializer>");
+					throw Error("Missing <initializer>", _currentLine);
 				}
 				next = nextToken();
+				if (!next.has_value()) {
+					throw Error("Missing ';'", _currentLine);
+				}
 			} while (next.value().GetType() != TokenType::COMMA_SIGH);
 			if (next.value().GetType() != TokenType::SEMICOLON) {
-				throw Error("Missing ';'");
+				throw Error("Missing ';'", _currentLine);
 			}
 			return;
 		}
@@ -47,7 +50,7 @@ void Analyser::analyse_variable_declaration() {
 				////init - declarator - list
 				next = nextToken();
 				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
-					throw Error("Missing < init - declarator - list>");
+					throw Error("Missing < init - declarator - list>", _currentLine);
 				}
 				addVariable(next.value());
 				bool has_initializer = analyse_initializer(type);
@@ -55,9 +58,12 @@ void Analyser::analyse_variable_declaration() {
 					initializeVar(type);
 				}
 				next = nextToken();
+				if (!next.has_value()) {
+					throw Error("Missing ';'", _currentLine);
+				}
 			} while (next.value().GetType() != TokenType::COMMA_SIGH);
 			if (next.value().GetType() != TokenType::SEMICOLON) {
-				throw Error("Missing ';'");
+				throw Error("Missing ';'", _currentLine);
 			}
 			return;
 		}
@@ -106,9 +112,12 @@ void Analyser::analyse_expression() {
 	auto next = nextToken();
 
 	while (next.has_value()) {
-		switch (next.value().GetType())
+		auto type = next.value().GetType();
+		switch (type)
 		{
 		case TokenType::PLUS_SIGN:
+			analyse_multiplicative_expression();
+
 			break;
 		case TokenType::MINUS_SIGN:
 			break;
@@ -130,6 +139,7 @@ void Analyser::analyse_function_definition() {
 std::optional<Token> Analyser::nextToken() {
 	if (_offset == _tokens.size())
 		return {};
+	_currentLine = _tokens[_offset++].GetLine();
 	return _tokens[_offset++];
 }
 
