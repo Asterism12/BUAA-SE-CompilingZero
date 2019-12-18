@@ -145,15 +145,22 @@ std::optional<Token> Analyser::nextToken() {
 }
 
 void Analyser::unreadToken() {
-	if (_offset == 0)
-		Error("analyser unreads token from the begining.");
+	if (_offset == 0) {
+		throw Error("analyser unreads token from the begining.");
+	}
 	_offset--;
 }
 
 void Analyser::addVariable(const Token& tk) {
-	if (tk.GetType() != TokenType::IDENTIFIER)
-		Error("only identifier can be added to the table.");
-	_localVars[std::any_cast<std::string>(tk.GetValue())] = _localIndex;
+	if (tk.GetType() != TokenType::IDENTIFIER) {
+		throw Error("only identifier can be added to the table.");
+	}
+	if (_currentFunction == -1) {
+		_globalVars[std::any_cast<std::string>(tk.GetValue())] = _localIndex;
+	}
+	else {
+		_localVars[std::any_cast<std::string>(tk.GetValue())] = _localIndex;
+	}
 	_localIndex++;
 }
 
@@ -173,4 +180,8 @@ std::optional<std::int32_t> Analyser::getIndexInGlobal(const std::string& s) {
 	else {
 		return {};
 	}
+}
+
+void Analyser::addInstruction(Instruction instruction) {
+
 }
