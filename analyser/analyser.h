@@ -12,7 +12,7 @@ class Analyser final {
 public:
 	Analyser(std::vector<Token> v)
 		: _tokens(std::move(v)), _offset(0), _globalIndex(0),
-		_currentFunction(0), _localIndex(0), _currentLine(0) {};
+		_currentFunction(-1), _localIndex(0), _currentLine(0) {};
 
 	// 唯一接口
 	void Analyse();
@@ -22,6 +22,8 @@ public:
 	std::vector<std::any> _consts;
 	//全局变量表，名字-偏移
 	std::map<std::string, std::int32_t> _globalVars;
+	//start_code
+	std::vector<Instruction> _startInstructions;
 	//函数表，名字-函数序号
 	std::map<std::string, std::int32_t> _functions;
 	//函数对应的指令队列，函数序号-指令队列
@@ -57,4 +59,5 @@ private:
 	//全局辅助变量及函数
 	std::optional<std::int32_t> getIndexInGlobal(const std::string&);
 	std::int32_t _globalIndex;
+	void addInstruction(Instruction instruction);
 };
