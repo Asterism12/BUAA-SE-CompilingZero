@@ -30,7 +30,7 @@ enum class DFAState {
 	HEXADECIMAL_STATE
 };
 
-class Tokenizer {
+class Tokenizer final{
 public:
 	Tokenizer(std::istream& ifs)
 		: _rdr(ifs), _initialized(false), _ptr(0, 0), _lines_buffer() {}
