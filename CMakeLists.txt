@@ -19,6 +19,7 @@ set(lib_src
 	tokenizer/utils.hpp
 	analyser/analyser.h
 	analyser/analyser.cpp
+	instruction/instruction.h
 )
 
 set(main_src
