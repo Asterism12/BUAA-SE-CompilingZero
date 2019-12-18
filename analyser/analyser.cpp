@@ -100,7 +100,7 @@ void Analyser::initializeVar(char type) {
 	switch (type)
 	{
 	case 'i':
-		_instructions[_currentFunction].push_back(Instruction(Operation::ipush, 0));
+		addInstruction(Instruction(Operation::ipush, 0));
 		break;
 	default:
 		break;
@@ -117,10 +117,10 @@ void Analyser::analyse_expression() {
 		switch (type)
 		{
 		case TokenType::PLUS_SIGN:
-			_instructions[_currentFunction].push_back(Instruction(Operation::iadd));
+			addInstruction(Instruction(Operation::iadd));
 			break;
 		case TokenType::MINUS_SIGN:
-			_instructions[_currentFunction].push_back(Instruction(Operation::isub));
+			addInstruction(Instruction(Operation::isub));
 			break;
 		default:
 			return;
@@ -183,5 +183,10 @@ std::optional<std::int32_t> Analyser::getIndexInGlobal(const std::string& s) {
 }
 
 void Analyser::addInstruction(Instruction instruction) {
-
+	if (_currentFunction == -1) {
+		_startInstructions.push_back(instruction);
+	}
+	else {
+		_instructions[_currentFunction].push_back(instruction);
+	}
 }
