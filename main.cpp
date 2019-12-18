@@ -22,7 +22,12 @@ void tokenize(std::istream& input, std::ostream& output) {
 				std::cout << std::any_cast<int>(t.GetValue()) << "\tinteger" << std::endl;
 			}
 			else {
-				std::cout << std::any_cast<char>(t.GetValue()) << "\tsign" << std::endl;
+				try {
+					std::cout << std::any_cast<char>(t.GetValue()) << "\tsign" << std::endl;
+				}
+				catch (const std::bad_any_cast&) {
+					std::cout << std::any_cast<std::string>(t.GetValue()) << "\tsign" << std::endl;
+				}
 			}
 		}
 	}

@@ -216,7 +216,7 @@ std::optional<Token> Tokenizer::nextToken() {
 				}
 				try {
 					int ret = std::stoi(ss.str());
-					return Token(TokenType::UNSIGNED_INTEGER, ret);
+					return Token(TokenType::UNSIGNED_INTEGER, ret, _ptr.first + 1);
 				}
 				catch (std::invalid_argument) {
 					throw Error("InvalidAgumentErr", _ptr.first + 1);
@@ -242,7 +242,7 @@ std::optional<Token> Tokenizer::nextToken() {
 				unreadLast();
 				try {
 					int ret = std::stoi(ss.str());
-					return Token(TokenType::UNSIGNED_INTEGER, ret);
+					return Token(TokenType::UNSIGNED_INTEGER, ret, _ptr.first + 1);
 				}
 				catch (std::invalid_argument) {
 					throw Error("InvalidAgumentErr", _ptr.first + 1);
@@ -257,7 +257,7 @@ std::optional<Token> Tokenizer::nextToken() {
 			if (!current_char.has_value()) {
 				try {
 					int ret = htoi(ss.str());
-					return Token(TokenType::UNSIGNED_INTEGER, ret);
+					return Token(TokenType::UNSIGNED_INTEGER, ret, _ptr.first + 1);
 				}
 				catch (std::invalid_argument) {
 					throw Error("InvalidAgumentErr", _ptr.first + 1);
@@ -274,7 +274,7 @@ std::optional<Token> Tokenizer::nextToken() {
 				unreadLast();
 				try {
 					int ret = htoi(ss.str());
-					return Token(TokenType::UNSIGNED_INTEGER, ret);
+					return Token(TokenType::UNSIGNED_INTEGER, ret, _ptr.first + 1);
 				}
 				catch (std::invalid_argument) {
 					throw Error("InvalidAgumentErr", _ptr.first + 1);
@@ -295,10 +295,10 @@ std::optional<Token> Tokenizer::nextToken() {
 			if (!current_char.has_value()) {
 				std::string str = ss.str();
 				if (ReservedWords.find(str) != ReservedWords.end()) {
-					return Token(TokenType::RESERVED_WORD, str);
+					return Token(TokenType::RESERVED_WORD, str, _ptr.first + 1);
 				}
 				else {
-					return Token(TokenType::IDENTIFIER, str);
+					return Token(TokenType::IDENTIFIER, str, _ptr.first + 1);
 				}
 			}
 			auto ch = current_char.value();
@@ -309,94 +309,94 @@ std::optional<Token> Tokenizer::nextToken() {
 				unreadLast();
 				std::string str = ss.str();
 				if (ReservedWords.find(str) != ReservedWords.end()) {
-					return Token(TokenType::RESERVED_WORD, str);
+					return Token(TokenType::RESERVED_WORD, str, _ptr.first + 1);
 				}
 				else {
-					return Token(TokenType::IDENTIFIER, str);
+					return Token(TokenType::IDENTIFIER, str, _ptr.first + 1);
 				}
 			}
 			break;
 		}
 		case DFAState::PLUS_SIGN_STATE: {
 			unreadLast(); // Yes, we unread last char even if it's an EOF.
-			return Token(TokenType::PLUS_SIGN, '+');
+			return Token(TokenType::PLUS_SIGN, '+', _ptr.first + 1);
 		}
 		case DFAState::MINUS_SIGN_STATE: {
 			unreadLast();
-			return Token(TokenType::MINUS_SIGN, '-');
+			return Token(TokenType::MINUS_SIGN, '-', _ptr.first + 1);
 		}
 		case DFAState::MULTIPLICATION_SIGN_STATE: {
 			unreadLast();
-			return Token(TokenType::MULTIPLICATION_SIGN, '*');
+			return Token(TokenType::MULTIPLICATION_SIGN, '*', _ptr.first + 1);
 		}
 		case DFAState::DIVISION_SIGN_STATE: {
 			unreadLast();
-			return Token(TokenType::DIVISION_SIGN, '/');
+			return Token(TokenType::DIVISION_SIGN, '/', _ptr.first + 1);
 		}
 		case DFAState::SEMICOLON_STATE: {
 			unreadLast();
-			return Token(TokenType::SEMICOLON, ';');
+			return Token(TokenType::SEMICOLON, ';', _ptr.first + 1);
 		}
 		case DFAState::LEFTBRACKET_STATE: {
 			unreadLast();
-			return Token(TokenType::LEFT_BRACKET, '(');
+			return Token(TokenType::LEFT_BRACKET, '(', _ptr.first + 1);
 		}
 		case DFAState::RIGHTBRACKET_STATE: {
 			unreadLast();
-			return Token(TokenType::RIGHT_BRACKET, ')');
+			return Token(TokenType::RIGHT_BRACKET, ')', _ptr.first + 1);
 		}
 
 										 //c0ÎÄ·¨
 		case DFAState::COMMA_STATE: {
 			unreadLast();
-			return Token(TokenType::COMMA_SIGH, ',');
+			return Token(TokenType::COMMA_SIGH, ',', _ptr.first + 1);
 		}
 		case DFAState::LEFTBRACE_STATE: {
 			unreadLast();
-			return Token(TokenType::LEFT_BRACE, '{');
+			return Token(TokenType::LEFT_BRACE, '{', _ptr.first + 1);
 		}
 		case DFAState::RIGHTBRACE_STATE: {
 			unreadLast();
-			return Token(TokenType::RIGHT_BRACE, '}');
+			return Token(TokenType::RIGHT_BRACE, '}', _ptr.first + 1);
 		}
 		case DFAState::EQUAL_SIGN_STATE: {
 			//= & ==
 			auto ch = current_char.value();
 			if (ch == '=') {
-				return Token(TokenType::EQUAL_SIGN, "==");
+				return Token(TokenType::EQUAL_SIGN, '==', _ptr.first + 1);
 			}
 			else {
 				unreadLast();
-				return Token(TokenType::ASSIGNMENT_SIGN, '=');
+				return Token(TokenType::ASSIGNMENT_SIGN, '=', _ptr.first + 1);
 			}
 		}
 		case DFAState::GREATER_THAN_STATE: {
 			//> & >=
 			auto ch = current_char.value();
 			if (ch == '=') {
-				return Token(TokenType::GREATER_THAN_EQUAL_SIGH, ">=");
+				return Token(TokenType::GREATER_THAN_EQUAL_SIGH, ">=", _ptr.first + 1);
 			}
 			else {
 				unreadLast();
-				return Token(TokenType::GREATER_THAN_SIGH, '{');
+				return Token(TokenType::GREATER_THAN_SIGH, '{', _ptr.first + 1);
 			}
 		}
 		case DFAState::LESS_THAN_STATE: {
 			//< & <=
 			auto ch = current_char.value();
 			if (ch == '=') {
-				return Token(TokenType::LESS_THAN_EQUAL_SIGH, "<=");
+				return Token(TokenType::LESS_THAN_EQUAL_SIGH, "<=", _ptr.first + 1);
 			}
 			else {
 				unreadLast();
-				return Token(TokenType::LESS_THAN_SIGH, '<');
+				return Token(TokenType::LESS_THAN_SIGH, '<', _ptr.first + 1);
 			}
 		}
 		case DFAState::EXCLAMATION_SIGH_STATE: {
 			//!=
 			auto ch = current_char.value();
 			if (ch == '=') {
-				return Token(TokenType::UNEQUAL_SIGN, "!=");
+				return Token(TokenType::UNEQUAL_SIGN, "!=", _ptr.first + 1);
 			}
 			else {
 				throw Error("InvalidInputErr", _ptr.first + 1);
