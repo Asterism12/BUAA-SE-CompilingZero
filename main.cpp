@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string.h>
 
-void compiler(std::istream& input, std::ostream& output) {
+void tokenize(std::istream& input, std::ostream& output) {
 	Tokenizer tkz(input);
 	try {
 		std::vector<Token> tokens = tkz.AllTokens();
@@ -29,6 +29,14 @@ void compiler(std::istream& input, std::ostream& output) {
 	catch (Error err) {
 		err.printErrorMessage();
 	}
+}
+
+void analyse(std::istream& input, std::ostream& output) {
+
+}
+
+void compiler(std::istream& input, std::ostream& output) {
+
 }
 
 void assembler(std::istream& input, std::ostream& output) {
@@ -98,6 +106,14 @@ int main(int argc, char** argv) {
 	}
 	else
 		output = &std::cout;
+
+	//for test
+	if (program["-t"] == true) {
+		tokenize(*input, *output);
+	}
+	if (program["-a"] == true) {
+		analyse(*input, *output);
+	}
 
 	if (program["-s"] == true && program["-c"] == true) {
 		std::cout << "You can only perform tokenization or syntactic analysis at one time.";
