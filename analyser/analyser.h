@@ -33,6 +33,10 @@ private:
 	char analyse_type_specifier();
 	bool analyse_initializer(char type);
 	void analyse_expression();
+	void analyse_multiplicative_expression();
+	bool analyse_additive_operator();
+	void analyse_unary_expression();
+	bool analyse_multiplicative_operator();
 
 	//tokenœ‡πÿ
 	std::optional<Token> nextToken();

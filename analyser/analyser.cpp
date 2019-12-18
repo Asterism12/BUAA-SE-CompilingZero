@@ -15,7 +15,7 @@ void Analyser::analyse_C0_sprogram() {
 void Analyser::analyse_variable_declaration() {
 	while (true) {
 		auto next = nextToken();
-		if (!next.has_value()|| !(next.value().GetType() == TokenType::RESERVED_WORD)) {
+		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
 			return;
 		}
 		//const
@@ -24,7 +24,7 @@ void Analyser::analyse_variable_declaration() {
 			do {
 				//init - declarator - list
 				next = nextToken();
-				if (!next.has_value() || !(next.value().GetType() == TokenType::IDENTIFIER)) {
+				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
 					throw Error("Missing < init - declarator - list>");
 				}
 				addVariable(next.value());
@@ -46,7 +46,7 @@ void Analyser::analyse_variable_declaration() {
 			do {
 				////init - declarator - list
 				next = nextToken();
-				if (!next.has_value() || !(next.value().GetType() == TokenType::IDENTIFIER)) {
+				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
 					throw Error("Missing < init - declarator - list>");
 				}
 				addVariable(next.value());
@@ -83,7 +83,7 @@ char Analyser::analyse_type_specifier() {
 //	'=' < expression >
 bool Analyser::analyse_initializer(char type) {
 	auto next = nextToken();
-	if (!next.has_value() || !(next.value().GetType() == TokenType::ASSIGNMENT_SIGN)){
+	if (!next.has_value() || (next.value().GetType() != TokenType::ASSIGNMENT_SIGN)) {
 		return false;
 	}
 	analyse_expression();
@@ -102,6 +102,24 @@ void Analyser::initializeVar(char type) {
 }
 
 void Analyser::analyse_expression() {
+	analyse_multiplicative_expression();
+	auto next = nextToken();
+
+	while (next.has_value()) {
+		switch (next.value().GetType())
+		{
+		case TokenType::PLUS_SIGN:
+			break;
+		case TokenType::MINUS_SIGN:
+			break;
+		default:
+			break;
+		}
+	}
+	return;
+}
+
+void Analyser::analyse_multiplicative_expression() {
 
 }
 
