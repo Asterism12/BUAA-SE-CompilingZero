@@ -237,16 +237,14 @@ void Analyser::loadVariable(const Token& tk) {
 	std::optional<std::int32_t> index = getIndexInLocal(var);
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 0, index.value()));
+		return;
 	}
-	else {
-		index = getIndexInGlobal(var);
-		if (index.has_value()) {
-			addInstruction(Instruction(Operation::loada, 1, index.value()));
-		}
-		else {
-			throw Error("can not find the identifier", _currentLine);
-		}
+	index = getIndexInGlobal(var);
+	if (index.has_value()) {
+		addInstruction(Instruction(Operation::loada, 1, index.value()));
+		return;
 	}
+	throw Error("can not find the identifier", _currentLine);
 }
 
 void Analyser::addVariable(const Token& tk) {
