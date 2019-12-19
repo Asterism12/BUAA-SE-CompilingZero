@@ -13,11 +13,11 @@ void Analyser::analyse_C0_sprogram() {
 
 //<variable-declaration> ::= 
 //	[<const - qualifier>]<type - specifier> < init - declarator - list>';'
-void Analyser::analyse_variable_declaration() {
+bool Analyser::analyse_variable_declaration() {
 	while (true) {
 		auto next = nextToken();
 		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
-			return;
+			return false;
 		}
 		//const
 		if (std::any_cast<std::string>(next.value().GetValue()) == "const") {
@@ -41,7 +41,7 @@ void Analyser::analyse_variable_declaration() {
 			if (next.value().GetType() != TokenType::SEMICOLON) {
 				throw Error("Missing ';'", _currentLine);
 			}
-			return;
+			return true;
 		}
 		//non-const
 		else {
@@ -66,6 +66,7 @@ void Analyser::analyse_variable_declaration() {
 			if (next.value().GetType() != TokenType::SEMICOLON) {
 				throw Error("Missing ';'", _currentLine);
 			}
+			return true;
 		}
 	}
 }
@@ -274,7 +275,7 @@ void Analyser::analyse_function_definition() {
 //	[<const - qualifier>]<type - specifier><identifier>
 void Analyser::analyse_parameter_clause() {
 	auto next = nextToken();
-	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACE) {
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
 		throw Error("Missing '('", _currentLine);
 	}
 	//<parameter-declaration>
@@ -314,12 +315,22 @@ void Analyser::analyse_parameter_clause() {
 			throw Error("Missing <identifier>", _currentLine);
 		}
 	}
-	if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON) {
+	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
 		throw Error("Missing ';'", _currentLine);
 	}
 }
 
+//<compound-statement> ::= 
+//	'{' {<variable - declaration>} < statement - seq> '}'
+//< statement - seq > :: =
+//	{ <statement> }
 void Analyser::analyse_compound_statement() {
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACE) {
+		throw Error("Missing '{'", _currentLine);
+	}
+	while (analyse_variable_declaration()) {}
+	
 	
 }
 
