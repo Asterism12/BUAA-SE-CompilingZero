@@ -11,7 +11,7 @@
 void tokenize(std::istream& input, std::ostream& output) {
 	Tokenizer tkz(input);
 	try {
-		std::vector<Token> tokens = tkz.AllTokens();
+		std::vector<Token> tokens = tkz.Tokenize();
 		for (Token t : tokens) {
 			if (t.GetType() == TokenType::RESERVED_WORD) {
 				std::cout << std::any_cast<std::string>(t.GetValue()) << "\treserved word" << std::endl;
@@ -39,7 +39,7 @@ void tokenize(std::istream& input, std::ostream& output) {
 
 void analyse(std::istream& input, std::ostream& output) {
 	Tokenizer tkz(input);
-	Analyser as(tkz.AllTokens());
+	Analyser as(tkz.Tokenize());
 	try {
 		as.Analyse();
 		std::cout << "const table" << std::endl;

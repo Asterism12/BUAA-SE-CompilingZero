@@ -34,7 +34,7 @@ class Tokenizer final{
 public:
 	Tokenizer(std::istream& ifs)
 		: _rdr(ifs), _initialized(false), _ptr(0, 0), _lines_buffer() {}
-	std::vector<Token> AllTokens();
+	std::vector<Token> Tokenize();
 	std::optional<Token> NextToken();
 private:
 	std::istream& _rdr;

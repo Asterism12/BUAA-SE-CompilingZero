@@ -70,7 +70,7 @@ std::optional<Token> Tokenizer::NextToken() {
 	return nextToken();
 }
 
-std::vector<Token> Tokenizer::AllTokens() {
+std::vector<Token> Tokenizer::Tokenize() {
 	std::vector<Token> result;
 	while (true) {
 		auto p = NextToken();
@@ -78,6 +78,7 @@ std::vector<Token> Tokenizer::AllTokens() {
 			result.emplace_back(p.value());
 		}
 		else {
+			std::cout << "Tokenizer successful return." << std::endl;
 			return result;
 		}
 	}

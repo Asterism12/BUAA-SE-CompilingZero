@@ -2,7 +2,7 @@
 
 void Analyser::Analyse() {
 	analyse_C0_sprogram();
-	std::cout << "end" << std::endl;
+	std::cout << "Analyser successful return." << std::endl;
 }
 //<C0-program> ::= 
 //	{<variable - declaration>} {<function - definition>}
