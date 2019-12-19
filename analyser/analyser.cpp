@@ -247,9 +247,14 @@ void Analyser::analyse_function_call() {
 //<function-definition> ::= 
 //	<type - specifier><identifier><parameter - clause><compound - statement>
 void Analyser::analyse_function_definition() {
+	auto next = nextToken();
+	if (!next.has_value()) {
+		return;
+	}
+	unreadToken();
 	char type = analyse_type_specifier();
 	//<identifier>
-	auto next = nextToken();
+	next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
 		throw Error("Missing identifier", _currentLine);
 	}
