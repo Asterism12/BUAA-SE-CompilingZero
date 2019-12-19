@@ -107,6 +107,10 @@ void Analyser::initializeVar(char type) {
 	}
 }
 
+//<expression> ::= 
+//	<additive - expression>
+//<additive - expression> :: =
+//	<multiplicative - expression>{ <additive - operator><multiplicative - expression> }
 void Analyser::analyse_expression() {
 	analyse_multiplicative_expression();
 	auto next = nextToken();
