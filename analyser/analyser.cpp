@@ -330,8 +330,16 @@ void Analyser::analyse_compound_statement() {
 		throw Error("Missing '{'", _currentLine);
 	}
 	while (analyse_variable_declaration()) {}
-	
-	
+	while (analyse_statement()) {}
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACE) {
+		throw Error("Missing '}'", _currentLine);
+	}
+}
+
+bool Analyser::analyse_statement()
+{
+	return false;
 }
 
 std::optional<Token> Analyser::nextToken() {

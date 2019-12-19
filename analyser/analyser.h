@@ -37,6 +37,7 @@ private:
 	void analyse_function_call();
 	void analyse_parameter_clause();
 	void analyse_compound_statement();
+	bool analyse_statement();
 
 	//tokenœ‡πÿ
 	std::optional<Token> nextToken();
