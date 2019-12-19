@@ -37,6 +37,7 @@ private:
 	void analyse_expression();
 	void analyse_multiplicative_expression();
 	void analyse_unary_expression();
+	bool analyse_function_call();
 
 	//tokenœ‡πÿ
 	std::optional<Token> nextToken();

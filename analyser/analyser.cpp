@@ -184,19 +184,24 @@ void Analyser::analyse_unary_expression() {
 		}
 		break;
 	case TokenType::IDENTIFIER:
-		loadVariable(next.value());
-		//º¯Êýµ÷ÓÃ
+		if (!loadVariable(next.value()) && !analyse_function_call()) {
+			throw Error("this identifier is not declared", _currentLine);
+		}
 		break;
 	case TokenType::UNSIGNED_INTEGER:
 		std::int32_t index = addConstant(next.value());
 		addInstruction(Instruction(Operation::loadc, index));
 		break;
 	default:
-		throw Error("Missing <primary-expression>");
+		throw Error("Missing <primary-expression>", _currentLine);
 	}
 	if (factor = -1) {
 		addInstruction(Instruction(Operation::isub, 0));
 	}
+}
+
+bool Analyser::analyse_function_call() {
+
 }
 
 void Analyser::analyse_function_definition() {
@@ -237,19 +242,19 @@ bool Analyser::loadVariable(const Token& tk) {
 	std::optional<std::int32_t> index = getIndexInLocal(var);
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 0, index.value()));
-		return;
+		return true;
 	}
 	index = getIndexInGlobal(var);
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 1, index.value()));
-		return;
+		return true;
 	}
-	throw Error("can not find the identifier", _currentLine);
+	return false;
 }
 
 void Analyser::addVariable(const Token& tk, bool isConstant) {
 	if (tk.GetType() != TokenType::IDENTIFIER) {
-		throw Error("only identifier can be added to the table");
+		throw Error("only identifier can be added to the table", _currentLine);
 	}
 	std::string var = std::any_cast<std::string>(tk.GetValue());
 	std::pair<bool, std::int32_t> valStruct(isConstant, _localIndex);
