@@ -127,13 +127,39 @@ void Analyser::analyse_expression() {
 			addInstruction(Instruction(Operation::isub));
 			break;
 		default:
+			unreadToken();
 			return;
 		}
+		next = nextToken();
 	}
 	return;
 }
 
 void Analyser::analyse_multiplicative_expression() {
+	analyse_unary_expression();
+	auto next = nextToken();
+
+	while (next.has_value()) {
+		auto type = next.value().GetType();
+		analyse_unary_expression();
+		switch (type)
+		{
+		case TokenType::MULTIPLICATION_SIGN:
+			addInstruction(Instruction(Operation::imul));	
+			break;
+		case TokenType::DIVISION_SIGN:
+			addInstruction(Instruction(Operation::idiv));
+			break;
+		default:
+			unreadToken();
+			return;
+		}
+		next = nextToken();
+	}
+	return;
+}
+
+void Analyser::analyse_unary_expression() {
 
 }
 

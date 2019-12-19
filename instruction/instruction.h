@@ -3,7 +3,9 @@
 enum class Operation {
 	ipush,
 	iadd,
-	isub
+	isub,
+	imul,
+	idiv
 };
 
 class Instruction final {
