@@ -260,7 +260,7 @@ void Analyser::analyse_function_definition() {
 		throw Error("Missing identifier", _currentLine);
 	}
 	std::string func = std::any_cast<std::string>(next.value().GetValue());
-	addFunction(func);
+	addFunction(func, type);
 	addConstant(next.value());
 	//<parameter - clause>
 	analyse_parameter_clause();
@@ -437,7 +437,7 @@ std::int32_t Analyser::addConstant(const Token &tk)
 	return _consts.size() - 1;
 }
 
-void Analyser::addFunction(const std::string& func)
+void Analyser::addFunction(const std::string& func, char type)
 {
 	if (_functions.find(func) != _functions.end()) {
 		throw Error("function has been declared", _currentLine);
@@ -448,6 +448,7 @@ void Analyser::addFunction(const std::string& func)
 	else {
 		//add & switch
 		_functions[func] = _currentFunction;
+		_functionRetType[func] = type;
 		_currentFunction++;
 		_localVars.clear();
 		_localIndex = 0;

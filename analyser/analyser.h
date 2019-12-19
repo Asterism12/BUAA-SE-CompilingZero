@@ -67,8 +67,9 @@ private:
 	//º¯ÊýÏà¹Ø
 	std::map<std::string, std::int32_t> _functions;
 	std::map<std::string, std::vector<char>> _functionParameter;
+	std::map<std::string,char> _functionRetType;
 	std::int32_t _currentFunction;
-	void addFunction(const std::string&);
+	void addFunction(const std::string&, char);
 	int getFunctionIndex(const std::string&);
 	std::vector<char> getFunctionParameter(const std::string&);
 };
