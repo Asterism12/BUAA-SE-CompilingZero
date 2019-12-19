@@ -17,9 +17,6 @@ public:
 	// 唯一接口
 	void Analyse();
 
-	//debug interface
-	std::vector<std::string> endState();
-
 	//程序结束后结果保存在这些数据结构中
 	//常量表
 	std::vector<std::any> _consts;
@@ -38,6 +35,8 @@ private:
 	void analyse_multiplicative_expression();
 	void analyse_unary_expression();
 	void analyse_function_call();
+	void analyse_parameter_clause();
+	void analyse_compound_statement();
 
 	//token相关
 	std::optional<Token> nextToken();
@@ -68,6 +67,8 @@ private:
 	std::map<std::string, std::int32_t> _functions;
 	std::map<std::string, std::vector<char>> _functionParameter;
 	std::int32_t _currentFunction;
+	void addFunction(const Token&);
+	void switchIndex();
 	int getFunctionIndex(const std::string&);
 	std::vector<char> getFunctionParameter(const std::string&);
 };

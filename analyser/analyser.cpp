@@ -213,13 +213,15 @@ void Analyser::analyse_unary_expression() {
 //<expression-list> ::= 
 //	<expression>{',' < expression > }
 void Analyser::analyse_function_call() {
+	//<identifier>
 	auto next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
-		throw Error("this identifier is not declared", _currentLine);
+		throw Error("Missing identifier", _currentLine);
 	}
 	std::string func = std::any_cast<std::string>(next.value().GetValue());
 	int index = getFunctionIndex(func);
 	std::vector<char> para = getFunctionParameter(func);
+	//'('
 	next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
 		throw Error("Missing '('", _currentLine);
@@ -234,9 +236,10 @@ void Analyser::analyse_function_call() {
 			}
 		}
 	}
+	//')'
 	next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
-		throw Error("Missing '('", _currentLine);
+		throw Error("Missing ')'", _currentLine);
 	}
 	addInstruction(Instruction(Operation::call, index));
 }
@@ -244,7 +247,33 @@ void Analyser::analyse_function_call() {
 //<function-definition> ::= 
 //	<type - specifier><identifier><parameter - clause><compound - statement>
 void Analyser::analyse_function_definition() {
+	char type = analyse_type_specifier();
+	//<identifier>
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
+		throw Error("Missing identifier", _currentLine);
+	}
+	addFunction(next.value());
+	addConstant(next.value());
+	//<parameter - clause>
+	analyse_parameter_clause();
+	analyse_compound_statement();
+}
 
+//<parameter-clause> ::= 
+//	'('[<parameter - declaration - list>] ')'
+//< parameter - declaration - list > :: =
+//	<parameter - declaration>{ ',' < parameter - declaration > }
+void Analyser::analyse_parameter_clause() {
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
+		throw Error("Missing '('", _currentLine);
+	}
+
+}
+
+void Analyser::analyse_compound_statement() {
+	
 }
 
 std::optional<Token> Analyser::nextToken() {
@@ -350,6 +379,25 @@ std::int32_t Analyser::addConstant(const Token& tk)
 	return _consts.size() - 1;
 }
 
+void Analyser::addFunction(const Token &tk)
+{
+	std::string func = std::any_cast<std::string>(tk.GetValue());
+	if (_functions.find(func) != _functions.end()) {
+		throw Error("function has been declared", _currentLine);
+	}
+	else if (_globalVars.find(func) != _globalVars.end()) {
+		throw Error("this identifier has been declared", _currentLine);
+	}
+	else {
+		_functions[func] = _currentFunction;
+		_currentFunction++;
+	}
+}
+
+void Analyser::switchIndex()
+{
+}
+
 int Analyser::getFunctionIndex(const std::string& s)
 {
 	if (_functions.find(s) != _functions.end()) {
@@ -365,3 +413,4 @@ std::vector<char> Analyser::getFunctionParameter(const std::string& s)
 	}
 	throw Error("function is not exist", _currentLine);
 }
+
