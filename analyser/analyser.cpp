@@ -55,7 +55,7 @@ void Analyser::analyse_variable_declaration() {
 				addVariable(next.value());
 				bool has_initializer = analyse_initializer(type);
 				if (!has_initializer) {
-					initializeVar(type);
+					initializeVariable(type);
 				}
 				next = nextToken();
 				if (!next.has_value()) {
@@ -96,17 +96,6 @@ bool Analyser::analyse_initializer(char type) {
 	return true;
 }
 
-void Analyser::initializeVar(char type) {
-	switch (type)
-	{
-	case 'i':
-		addInstruction(Instruction(Operation::ipush, 0));
-		break;
-	default:
-		break;
-	}
-}
-
 //<expression> ::= 
 //	<additive - expression>
 //<additive - expression> :: =
@@ -145,7 +134,7 @@ void Analyser::analyse_multiplicative_expression() {
 		switch (type)
 		{
 		case TokenType::MULTIPLICATION_SIGN:
-			addInstruction(Instruction(Operation::imul));	
+			addInstruction(Instruction(Operation::imul));
 			break;
 		case TokenType::DIVISION_SIGN:
 			addInstruction(Instruction(Operation::idiv));
@@ -159,8 +148,45 @@ void Analyser::analyse_multiplicative_expression() {
 	return;
 }
 
+//<unary - expression> :: =
+//	[<unary - operator>]<primary - expression>
+//<primary-expression> ::=  
+//	'(' < expression > ')'
+//	| <identifier>
+//	| <integer - literal>
+//	| <function - call>
 void Analyser::analyse_unary_expression() {
+	auto next = nextToken();
+	if (!next.has_value()) {
+		throw Error("Missing <expression>");
+	}
+	//<unary - operator>
+	std::uint32_t factor = 1;
+	if (next.value().GetType == TokenType::PLUS_SIGN) {
+		next = nextToken();
+	}
+	else if (next.value().GetType() == TokenType::MINUS_SIGN) {
+		factor = -1;
+		next = nextToken();
+	}
+	//primary - expression
+	if (!next.has_value()) {
+		throw Error("Missing <primary-expression>");
+	}
+	switch (next.value().GetType())
+	{
+	case TokenType::LEFT_BRACKET:
+		analyse_expression();
+		next = nextToken();
+		if (!next.has_value() || next.value().GetType != TokenType::RIGHT_BRACKET) {
+			throw Error("Missing ')'");
+		}
+		break;
+	case TokenType::IDENTIFIER:
 
+	default:
+		break;
+	}
 }
 
 void Analyser::analyse_function_definition() {
@@ -179,6 +205,32 @@ void Analyser::unreadToken() {
 		throw Error("analyser unreads token from the begining.");
 	}
 	_offset--;
+}
+
+void Analyser::initializeVariable(char type) {
+	switch (type)
+	{
+	case 'i':
+		addInstruction(Instruction(Operation::ipush, 0));
+		break;
+	default:
+		break;
+	}
+}
+
+void Analyser::loadVariable(const Token& tk) {
+	if (tk.GetType() != TokenType::IDENTIFIER) {
+		throw Error("only identifier can be load.");
+	}
+	std::string var = std::any_cast<std::string>(tk.GetValue());
+	std::optional<std::int32_t> index = getIndexInLocal(var);
+	if (index.has_value()) {
+		addInstruction(Instruction(Operation::loada, 0, index.value()));
+	}
+	else {
+		index = getIndexInGlobal(var);
+		addInstruction(Instruction(Operation::loada, 1, index.value()));
+	}
 }
 
 void Analyser::addVariable(const Token& tk) {

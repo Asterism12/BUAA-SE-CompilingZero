@@ -5,7 +5,8 @@ enum class Operation {
 	iadd,
 	isub,
 	imul,
-	idiv
+	idiv,
+	loada
 };
 
 class Instruction final {
