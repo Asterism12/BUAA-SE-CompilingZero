@@ -256,7 +256,6 @@ void Analyser::analyse_function_definition() {
 	std::string func = std::any_cast<std::string>(next.value().GetValue());
 	addFunction(func);
 	addConstant(next.value());
-	switchIndex();
 	//<parameter - clause>
 	analyse_parameter_clause();
 	analyse_compound_statement();
@@ -382,13 +381,12 @@ void Analyser::addFunction(const std::string& func)
 		throw Error("this identifier has been declared", _currentLine);
 	}
 	else {
+		//add & switch
 		_functions[func] = _currentFunction;
 		_currentFunction++;
+		_localVars.clear();
+		_localIndex = 0;
 	}
-}
-
-void Analyser::switchIndex()
-{
 }
 
 int Analyser::getFunctionIndex(const std::string& s)

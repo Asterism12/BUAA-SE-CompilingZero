@@ -68,7 +68,6 @@ private:
 	std::map<std::string, std::vector<char>> _functionParameter;
 	std::int32_t _currentFunction;
 	void addFunction(const std::string&);
-	void switchIndex();//切换语法分析上下文，切换local为当前函数
 	int getFunctionIndex(const std::string&);
 	std::vector<char> getFunctionParameter(const std::string&);
 };
