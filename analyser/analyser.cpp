@@ -203,12 +203,38 @@ void Analyser::analyse_unary_expression() {
 	}
 }
 
+
+//<function-call> ::= 
+//	<identifier> '('[<expression - list>] ')'
+//<expression-list> ::= 
+//	<expression>{',' < expression > }
 void Analyser::analyse_function_call() {
 	auto next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
 		throw Error("this identifier is not declared", _currentLine);
 	}
-	
+	std::string func = std::any_cast<std::string>(next.value().GetValue());
+	int index = getFunctionIndex(func);
+	std::vector<char> para = getFunctionParameter(func);
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
+		throw Error("Missing '('", _currentLine);
+	}
+	//<expression-list>
+	for (int i = 0; i < para.size(); i++) {
+		analyse_expression();
+		if (i != para.size() - 1) {
+			next = nextToken();
+			if (!next.has_value() || next.value().GetType() != TokenType::COMMA_SIGH) {
+				throw Error("Missing ','", _currentLine);
+			}
+		}
+	}
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
+		throw Error("Missing '('", _currentLine);
+	}
+	addInstruction(Instruction(Operation::call, index));
 }
 
 void Analyser::analyse_function_definition() {
