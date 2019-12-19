@@ -196,7 +196,7 @@ void Analyser::analyse_function_definition() {
 std::optional<Token> Analyser::nextToken() {
 	if (_offset == _tokens.size())
 		return {};
-	_currentLine = _tokens[_offset++].GetLine();
+	_currentLine = _tokens[_offset].GetLine();
 	return _tokens[_offset++];
 }
 
@@ -204,6 +204,7 @@ void Analyser::unreadToken() {
 	if (_offset == 0) {
 		throw Error("analyser unreads token from the begining");
 	}
+	_currentLine = _tokens[_offset - 1].GetLine();
 	_offset--;
 }
 
