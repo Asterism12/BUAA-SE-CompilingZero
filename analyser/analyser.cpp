@@ -346,8 +346,35 @@ void Analyser::analyse_compound_statement() {
 	}
 }
 
+//<statement-seq> ::= 
+//	{<statement>}
+//<statement> :: =
+//	'{' < statement - seq > '}'
+//	| <condition - statement>
+//	| <loop - statement>
+//	| <jump - statement>
+//	| <print - statement>
+//	| <scan - statement>
+//	| < assignment - expression>';'
+//	| < function - call>';'
+//	| ';'
 bool Analyser::analyse_statement()
 {
+	auto next = nextToken();
+	if (!next.has_value()) {
+		return false;
+	}
+	switch (next.value().GetType())
+	{
+	case TokenType::LEFT_BRACE:
+		analyse_statement();
+		next = nextToken();
+		if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACE) {
+			throw Error("Missing '}'", _currentLine);
+		}
+	default:
+		break;
+	}
 	return false;
 }
 
