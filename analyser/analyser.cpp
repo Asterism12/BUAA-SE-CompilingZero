@@ -162,7 +162,7 @@ void Analyser::analyse_unary_expression() {
 	}
 	//<unary - operator>
 	std::int32_t factor = 1;
-	if (next.value().GetType == TokenType::PLUS_SIGN) {
+	if (next.value().GetType() == TokenType::PLUS_SIGN) {
 		next = nextToken();
 	}
 	else if (next.value().GetType() == TokenType::MINUS_SIGN) {
@@ -174,34 +174,41 @@ void Analyser::analyse_unary_expression() {
 	if (!next.has_value()) {
 		throw Error("Missing <primary-expression>", _currentLine);
 	}
+	std::int32_t index;
 	switch (next.value().GetType())
 	{
 	case TokenType::LEFT_BRACKET:
 		analyse_expression();
 		next = nextToken();
-		if (!next.has_value() || next.value().GetType != TokenType::RIGHT_BRACKET) {
+		if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
 			throw Error("Missing ')'");
 		}
 		break;
 	case TokenType::IDENTIFIER:
-		if (!loadVariable(next.value()) && !analyse_function_call()) {
-			throw Error("this identifier is not declared", _currentLine);
+		if (!loadVariable(next.value())) {
+			unreadToken();
+			analyse_function_call();
 		}
 		break;
 	case TokenType::UNSIGNED_INTEGER:
-		std::int32_t index = addConstant(next.value());
+		index = addConstant(next.value());
 		addInstruction(Instruction(Operation::loadc, index));
 		break;
 	default:
 		throw Error("Missing <primary-expression>", _currentLine);
+		break;
 	}
-	if (factor = -1) {
+	if (factor == -1) {
 		addInstruction(Instruction(Operation::isub, 0));
 	}
 }
 
-bool Analyser::analyse_function_call() {
-
+void Analyser::analyse_function_call() {
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
+		throw Error("this identifier is not declared", _currentLine);
+	}
+	
 }
 
 void Analyser::analyse_function_definition() {
@@ -309,4 +316,20 @@ std::int32_t Analyser::addConstant(const Token& tk)
 	//warning! There is no type check!
 	_consts.push_back(tk.GetValue());
 	return _consts.size() - 1;
+}
+
+int Analyser::getFunctionIndex(const std::string& s)
+{
+	if (_functions.find(s) != _functions.end()) {
+		return _functions[s];
+	}
+	throw Error("function is not exist", _currentLine);
+}
+
+std::vector<char> Analyser::getFunctionParameter(const std::string& s)
+{
+	if (_functions.find(s) != _functions.end()) {
+		return _functionParameter[s];
+	}
+	throw Error("function is not exist", _currentLine);
 }
