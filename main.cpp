@@ -62,6 +62,8 @@ void analyse(std::istream& input, std::ostream& output) {
 			}
 		}
 		std::cout << "function table" << std::endl;
+		for (auto ins : as._instructions){
+		}
 	}
 	catch (Error err) {
 		err.printErrorMessage();
