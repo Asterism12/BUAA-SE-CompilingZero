@@ -22,6 +22,9 @@ bool Analyser::analyse_variable_declaration() {
 		//const
 		if (std::any_cast<std::string>(next.value().GetValue()) == "const") {
 			char type = analyse_type_specifier();
+			if (type == 'v') {
+				throw Error("can not identify a 'void' variable", _currentLine);
+			}
 			do {
 				//init - declarator - list
 				next = nextToken();
@@ -47,6 +50,9 @@ bool Analyser::analyse_variable_declaration() {
 		else {
 			unreadToken();
 			char type = analyse_type_specifier();
+			if (type == 'v') {
+				throw Error("can not identify a 'void' variable", _currentLine);
+			}
 			do {
 				////init - declarator - list
 				next = nextToken();
@@ -80,6 +86,9 @@ char Analyser::analyse_type_specifier() {
 	}
 	if (std::any_cast<std::string>(next.value().GetValue()) == "int") {
 		return 'i';
+	}
+	else if (std::any_cast<std::string>(next.value().GetValue()) == "void") {
+		return 'v';
 	}
 	else {
 		throw Error("Wrong identifier type", _currentLine);
