@@ -75,13 +75,13 @@ void Analyser::analyse_variable_declaration() {
 char Analyser::analyse_type_specifier() {
 	auto next = nextToken();
 	if (!next.has_value()) {
-		throw Error("Missing <type - specifier>", next.value().GetLine());
+		throw Error("Missing <type - specifier>", _currentLine);
 	}
 	if (std::any_cast<std::string>(next.value().GetValue()) == "int") {
 		return 'i';
 	}
 	else {
-		throw Error("Wrong identifier type", next.value().GetLine());
+		throw Error("Wrong identifier type", _currentLine);
 	}
 }
 
@@ -158,7 +158,7 @@ void Analyser::analyse_multiplicative_expression() {
 void Analyser::analyse_unary_expression() {
 	auto next = nextToken();
 	if (!next.has_value()) {
-		throw Error("Missing <expression>");
+		throw Error("Missing <expression>", _currentLine);
 	}
 	//<unary - operator>
 	std::uint32_t factor = 1;
@@ -171,7 +171,7 @@ void Analyser::analyse_unary_expression() {
 	}
 	//primary - expression
 	if (!next.has_value()) {
-		throw Error("Missing <primary-expression>");
+		throw Error("Missing <primary-expression>", _currentLine);
 	}
 	switch (next.value().GetType())
 	{
@@ -202,7 +202,7 @@ std::optional<Token> Analyser::nextToken() {
 
 void Analyser::unreadToken() {
 	if (_offset == 0) {
-		throw Error("analyser unreads token from the begining");
+		throw Error("analyser unreads token from the begining", _currentLine);
 	}
 	_currentLine = _tokens[_offset - 1].GetLine();
 	_offset--;
@@ -246,8 +246,7 @@ void Analyser::addVariable(const Token& tk) {
 	std::string var = std::any_cast<std::string>(tk.GetValue());
 	if (_currentFunction == -1) {
 		if (_globalVars.find(var) != _globalVars.end()) {
-			throw Error("this identifier has been declared");
-			
+			throw Error("this identifier has been declared", _currentLine);
 		}
 		else {
 			_globalVars[var] = _localIndex;
@@ -255,7 +254,7 @@ void Analyser::addVariable(const Token& tk) {
 	}
 	else {
 		if (_localVars.find(var) != _localVars.end()) {
-			throw Error("this identifier has been declared");
+			throw Error("this identifier has been declared", _currentLine);
 		}
 		else {
 			_localVars[var] = _localIndex;
