@@ -20,8 +20,7 @@ public:
 	//程序结束后结果保存在这些数据结构中
 	//常量表
 	std::vector<std::any> _consts;
-	//全局变量表，名字-偏移
-	std::map<std::string, std::int32_t> _globalVars;
+	
 	//start_code
 	std::vector<Instruction> _startInstructions;
 	//函数表，名字-函数序号
@@ -45,20 +44,21 @@ private:
 	std::vector<Token> _tokens;
 	std::size_t _offset;
 
-	//局部变量表，名字-偏移
-	std::map<std::string, std::int32_t> _localVars;
+	//局部变量表，名字-<是否是常量,偏移>
+	std::map<std::string, std::pair<bool, std::int32_t>> _localVars;
 	std::optional<std::int32_t> getIndexInLocal(const std::string&);
 	std::int32_t _localIndex;
 	std::int32_t _currentFunction;
 	std::int32_t _currentLine;
 
-	//全局辅助变量及函数
+	//全局变量表，名字-<是否是常量,偏移>
+	std::map<std::string, std::pair<bool, std::int32_t>> _globalVars;
 	std::optional<std::int32_t> getIndexInGlobal(const std::string&);
 	std::int32_t _globalIndex;
 	std::int32_t addConstant(const Token&);
 	void addInstruction(Instruction instruction);
-	void addVariable(const Token&);
-	void loadVariable(const Token&);
+	void addVariable(const Token&, bool isConstant);
+	bool loadVariable(const Token&);
 	void initializeVariable(char type);
 	
 };

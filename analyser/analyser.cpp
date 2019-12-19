@@ -27,7 +27,7 @@ void Analyser::analyse_variable_declaration() {
 				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
 					throw Error("Missing < init - declarator - list>", _currentLine);
 				}
-				addVariable(next.value());
+				addVariable(next.value(), true);
 				bool has_initializer = analyse_initializer(type);
 				if (!has_initializer) {
 					throw Error("Missing <initializer>", _currentLine);
@@ -52,7 +52,7 @@ void Analyser::analyse_variable_declaration() {
 				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
 					throw Error("Missing < init - declarator - list>", _currentLine);
 				}
-				addVariable(next.value());
+				addVariable(next.value(), false);
 				bool has_initializer = analyse_initializer(type);
 				if (!has_initializer) {
 					initializeVariable(type);
@@ -229,7 +229,7 @@ void Analyser::initializeVariable(char type) {
 	}
 }
 
-void Analyser::loadVariable(const Token& tk) {
+bool Analyser::loadVariable(const Token& tk) {
 	if (tk.GetType() != TokenType::IDENTIFIER) {
 		throw Error("only identifier can be load", _currentLine);
 	}
@@ -247,17 +247,18 @@ void Analyser::loadVariable(const Token& tk) {
 	throw Error("can not find the identifier", _currentLine);
 }
 
-void Analyser::addVariable(const Token& tk) {
+void Analyser::addVariable(const Token& tk, bool isConstant) {
 	if (tk.GetType() != TokenType::IDENTIFIER) {
 		throw Error("only identifier can be added to the table");
 	}
 	std::string var = std::any_cast<std::string>(tk.GetValue());
+	std::pair<bool, std::int32_t> valStruct(isConstant, _localIndex);
 	if (_currentFunction == -1) {
 		if (_globalVars.find(var) != _globalVars.end()) {
 			throw Error("this identifier has been declared", _currentLine);
 		}
 		else {
-			_globalVars[var] = _localIndex;
+			_globalVars[var] = valStruct;
 		}
 	}
 	else {
@@ -265,7 +266,7 @@ void Analyser::addVariable(const Token& tk) {
 			throw Error("this identifier has been declared", _currentLine);
 		}
 		else {
-			_localVars[var] = _localIndex;
+			_localVars[var] = valStruct;
 		}
 	}
 	_localIndex++;
@@ -273,7 +274,7 @@ void Analyser::addVariable(const Token& tk) {
 
 std::optional<std::int32_t> Analyser::getIndexInLocal(const std::string& s) {
 	if (_localVars.find(s) != _localVars.end()) {
-		return _localVars[s];
+		return _localVars[s].second;
 	}
 	else {
 		return {};
@@ -282,7 +283,7 @@ std::optional<std::int32_t> Analyser::getIndexInLocal(const std::string& s) {
 
 std::optional<std::int32_t> Analyser::getIndexInGlobal(const std::string& s) {
 	if (_globalVars.find(s) != _globalVars.end()) {
-		return _globalVars[s];
+		return _globalVars[s].second;
 	}
 	else {
 		return {};
