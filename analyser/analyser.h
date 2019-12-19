@@ -59,16 +59,16 @@ private:
 	//变量相关
 	std::int32_t addConstant(const Token&);
 	void addInstruction(Instruction instruction);
-	void addVariable(const Token&, bool isConstant);
-	bool loadVariable(const Token&);
+	void addVariable(const std::string&, bool);
+	bool loadVariable(const std::string&);
 	void initializeVariable(char type);
 	
 	//函数相关
 	std::map<std::string, std::int32_t> _functions;
 	std::map<std::string, std::vector<char>> _functionParameter;
 	std::int32_t _currentFunction;
-	void addFunction(const Token&);
-	void switchIndex();
+	void addFunction(const std::string&);
+	void switchIndex();//切换语法分析上下文，切换local为当前函数
 	int getFunctionIndex(const std::string&);
 	std::vector<char> getFunctionParameter(const std::string&);
 };

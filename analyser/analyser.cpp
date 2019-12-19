@@ -28,7 +28,7 @@ void Analyser::analyse_variable_declaration() {
 				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
 					throw Error("Missing < init - declarator - list>", _currentLine);
 				}
-				addVariable(next.value(), true);
+				addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
 				bool has_initializer = analyse_initializer(type);
 				if (!has_initializer) {
 					throw Error("Missing <initializer>", _currentLine);
@@ -53,7 +53,7 @@ void Analyser::analyse_variable_declaration() {
 				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
 					throw Error("Missing < init - declarator - list>", _currentLine);
 				}
-				addVariable(next.value(), false);
+				addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
 				bool has_initializer = analyse_initializer(type);
 				if (!has_initializer) {
 					initializeVariable(type);
@@ -189,7 +189,7 @@ void Analyser::analyse_unary_expression() {
 		}
 		break;
 	case TokenType::IDENTIFIER:
-		if (!loadVariable(next.value())) {
+		if (!loadVariable(std::any_cast<std::string>(next.value().GetValue()))) {
 			unreadToken();
 			analyse_function_call();
 		}
@@ -253,8 +253,10 @@ void Analyser::analyse_function_definition() {
 	if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
 		throw Error("Missing identifier", _currentLine);
 	}
-	addFunction(next.value());
+	std::string func = std::any_cast<std::string>(next.value().GetValue());
+	addFunction(func);
 	addConstant(next.value());
+	switchIndex();
 	//<parameter - clause>
 	analyse_parameter_clause();
 	analyse_compound_statement();
@@ -302,11 +304,7 @@ void Analyser::initializeVariable(char type) {
 	}
 }
 
-bool Analyser::loadVariable(const Token& tk) {
-	if (tk.GetType() != TokenType::IDENTIFIER) {
-		throw Error("only identifier can be load", _currentLine);
-	}
-	std::string var = std::any_cast<std::string>(tk.GetValue());
+bool Analyser::loadVariable(const std::string& var) {
 	std::optional<std::int32_t> index = getIndexInLocal(var);
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 0, index.value()));
@@ -320,11 +318,7 @@ bool Analyser::loadVariable(const Token& tk) {
 	return false;
 }
 
-void Analyser::addVariable(const Token& tk, bool isConstant) {
-	if (tk.GetType() != TokenType::IDENTIFIER) {
-		throw Error("only identifier can be added to the table", _currentLine);
-	}
-	std::string var = std::any_cast<std::string>(tk.GetValue());
+void Analyser::addVariable(const std::string& var, bool isConstant) {
 	std::pair<bool, std::int32_t> valStruct(isConstant, _localIndex);
 	if (_currentFunction == -1) {
 		if (_globalVars.find(var) != _globalVars.end()) {
@@ -372,16 +366,15 @@ void Analyser::addInstruction(Instruction instruction) {
 	}
 }
 
-std::int32_t Analyser::addConstant(const Token& tk)
+std::int32_t Analyser::addConstant(const Token &tk)
 {
 	//warning! There is no type check!
 	_consts.push_back(tk.GetValue());
 	return _consts.size() - 1;
 }
 
-void Analyser::addFunction(const Token &tk)
+void Analyser::addFunction(const std::string& func)
 {
-	std::string func = std::any_cast<std::string>(tk.GetValue());
 	if (_functions.find(func) != _functions.end()) {
 		throw Error("function has been declared", _currentLine);
 	}
