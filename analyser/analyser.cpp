@@ -241,13 +241,25 @@ void Analyser::loadVariable(const Token& tk) {
 
 void Analyser::addVariable(const Token& tk) {
 	if (tk.GetType() != TokenType::IDENTIFIER) {
-		throw Error("only identifier can be added to the table.");
+		throw Error("only identifier can be added to the table");
 	}
+	std::string var = std::any_cast<std::string>(tk.GetValue());
 	if (_currentFunction == -1) {
-		_globalVars[std::any_cast<std::string>(tk.GetValue())] = _localIndex;
+		if (_globalVars.find(var) != _globalVars.end()) {
+			throw Error("this identifier has been declared");
+			
+		}
+		else {
+			_globalVars[var] = _localIndex;
+		}
 	}
 	else {
-		_localVars[std::any_cast<std::string>(tk.GetValue())] = _localIndex;
+		if (_localVars.find(var) != _localVars.end()) {
+			throw Error("this identifier has been declared");
+		}
+		else {
+			_localVars[var] = _localIndex;
+		}
 	}
 	_localIndex++;
 }
