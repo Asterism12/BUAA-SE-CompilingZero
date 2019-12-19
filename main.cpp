@@ -44,25 +44,22 @@ void analyse(std::istream& input, std::ostream& output) {
 		std::cout << "const table" << std::endl;
 		for (std::any c : as._consts) {
 			try {
-				std::cout << std::any_cast<char>(c) << std::endl;
+				std::cout << std::any_cast<char>(c) << "\tchar" << std::endl;
 				continue;
 			}
 			catch(const std::bad_any_cast&){}
 			try {
-				std::cout << std::any_cast<int>(c) << std::endl;
+				std::cout << std::any_cast<int>(c) << "\tint" << std::endl;
 				continue;
 			}
 			catch (const std::bad_any_cast&) {}
 			try {
-				std::cout << std::any_cast<std::string>(c) << std::endl;
+				std::cout << std::any_cast<std::string>(c) << "\tstring" << std::endl;
 				continue;
 			}
 			catch (const std::bad_any_cast&) {
 				throw Error("type error");
 			}
-		}
-		std::cout << "function table" << std::endl;
-		for (auto ins : as._instructions){
 		}
 	}
 	catch (Error err) {
@@ -81,6 +78,16 @@ void assembler(std::istream& input, std::ostream& output) {
 int main(int argc, char** argv) {
 
 	argparse::ArgumentParser program("program name");
+
+	program.add_argument("-t")
+		.help("Translate the input c0 source code into a text assembly file")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument("-a")
+		.help("Translate the input c0 source code into a text assembly file")
+		.default_value(false)
+		.implicit_value(true);
 
 	program.add_argument("-s")
 		.help("Translate the input c0 source code into a text assembly file")
