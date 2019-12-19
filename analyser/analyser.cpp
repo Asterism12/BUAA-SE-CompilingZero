@@ -202,7 +202,7 @@ std::optional<Token> Analyser::nextToken() {
 
 void Analyser::unreadToken() {
 	if (_offset == 0) {
-		throw Error("analyser unreads token from the begining.");
+		throw Error("analyser unreads token from the begining");
 	}
 	_offset--;
 }
@@ -220,7 +220,7 @@ void Analyser::initializeVariable(char type) {
 
 void Analyser::loadVariable(const Token& tk) {
 	if (tk.GetType() != TokenType::IDENTIFIER) {
-		throw Error("only identifier can be load.");
+		throw Error("only identifier can be load", _currentLine);
 	}
 	std::string var = std::any_cast<std::string>(tk.GetValue());
 	std::optional<std::int32_t> index = getIndexInLocal(var);
@@ -229,7 +229,12 @@ void Analyser::loadVariable(const Token& tk) {
 	}
 	else {
 		index = getIndexInGlobal(var);
-		addInstruction(Instruction(Operation::loada, 1, index.value()));
+		if (index.has_value()) {
+			addInstruction(Instruction(Operation::loada, 1, index.value()));
+		}
+		else {
+			throw Error("can not find the identifier", _currentLine);
+		}
 	}
 }
 
