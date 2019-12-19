@@ -22,10 +22,8 @@ public:
 	std::vector<std::any> _consts;
 	//start_code
 	std::vector<Instruction> _startInstructions;
-	//函数表，名字-函数序号
-	std::map<std::string, std::int32_t> _functions;
 	//函数对应的指令队列，函数序号-指令队列
-	std::map<std::int32_t, std::vector<Instruction>> _instructions;
+	std::vector<std::vector<Instruction>> _instructions;
 private:
 	// 所有的递归子程序
 	void analyse_C0_sprogram();
@@ -63,7 +61,8 @@ private:
 	bool loadVariable(const Token&);
 	void initializeVariable(char type);
 	
-	//记录函数的参数
+	//函数相关
+	std::map<std::string, std::int32_t> _functions;
 	std::map<std::string, std::vector<char>> _functionParameter;
 	std::int32_t _currentFunction;
 	int getFunctionIndex(const std::string&);
