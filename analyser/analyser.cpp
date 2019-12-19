@@ -2,7 +2,7 @@
 
 void Analyser::Analyse() {
 	analyse_C0_sprogram();
-
+	std::cout << "end" << std::endl;
 }
 //<C0-program> ::= 
 //	{<variable - declaration>} {<function - definition>}
@@ -37,7 +37,7 @@ void Analyser::analyse_variable_declaration() {
 				if (!next.has_value()) {
 					throw Error("Missing ';'", _currentLine);
 				}
-			} while (next.value().GetType() != TokenType::COMMA_SIGH);
+			} while (next.value().GetType() == TokenType::COMMA_SIGH);
 			if (next.value().GetType() != TokenType::SEMICOLON) {
 				throw Error("Missing ';'", _currentLine);
 			}
@@ -62,11 +62,10 @@ void Analyser::analyse_variable_declaration() {
 				if (!next.has_value()) {
 					throw Error("Missing ';'", _currentLine);
 				}
-			} while (next.value().GetType() != TokenType::COMMA_SIGH);
+			} while (next.value().GetType() == TokenType::COMMA_SIGH);
 			if (next.value().GetType() != TokenType::SEMICOLON) {
 				throw Error("Missing ';'", _currentLine);
 			}
-			return;
 		}
 	}
 }
@@ -107,13 +106,14 @@ void Analyser::analyse_expression() {
 
 	while (next.has_value()) {
 		auto type = next.value().GetType();
-		analyse_multiplicative_expression();
 		switch (type)
 		{
 		case TokenType::PLUS_SIGN:
+			analyse_multiplicative_expression();
 			addInstruction(Instruction(Operation::iadd));
 			break;
 		case TokenType::MINUS_SIGN:
+			analyse_multiplicative_expression();
 			addInstruction(Instruction(Operation::isub));
 			break;
 		default:
@@ -125,19 +125,22 @@ void Analyser::analyse_expression() {
 	return;
 }
 
+//<multiplicative-expression> ::= 
+//	<unary - expression>{<multiplicative - operator><unary - expression>}
 void Analyser::analyse_multiplicative_expression() {
 	analyse_unary_expression();
 	auto next = nextToken();
 
 	while (next.has_value()) {
 		auto type = next.value().GetType();
-		analyse_unary_expression();
 		switch (type)
 		{
 		case TokenType::MULTIPLICATION_SIGN:
+			analyse_unary_expression();
 			addInstruction(Instruction(Operation::imul));
 			break;
 		case TokenType::DIVISION_SIGN:
+			analyse_unary_expression();
 			addInstruction(Instruction(Operation::idiv));
 			break;
 		default:
