@@ -265,12 +265,53 @@ void Analyser::analyse_function_definition() {
 //	'('[<parameter - declaration - list>] ')'
 //< parameter - declaration - list > :: =
 //	<parameter - declaration>{ ',' < parameter - declaration > }
+//<parameter-declaration> ::= 
+//	[<const - qualifier>]<type - specifier><identifier>
 void Analyser::analyse_parameter_clause() {
 	auto next = nextToken();
-	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACE) {
 		throw Error("Missing '('", _currentLine);
 	}
-
+	//<parameter-declaration>
+	next = nextToken();
+	while (true) {
+		if (!next.has_value() || next.value().GetType() != TokenType::RESERVED_WORD) {
+			break;
+		}
+		//const
+		if (std::any_cast<std::string>(next.value().GetValue()) == "const") {
+			char type = analyse_type_specifier();
+				//<identifier>
+				next = nextToken();
+				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
+					throw Error("Missing <identifier>", _currentLine);
+				}
+				addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
+		}
+		//non-const
+		else {
+			unreadToken();
+			char type = analyse_type_specifier();
+			next = nextToken();
+			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
+				throw Error("Missing <identifier>", _currentLine);
+			}
+			addVariable(std::any_cast<std::string>(next.value().GetValue()), false);
+		}
+		//','
+		next = nextToken();
+		if (!next.has_value() || next.value().GetType() != TokenType::COMMA_SIGH) {
+			break;
+		}
+		//预读判断是否为func(int a ,)这种错误情况
+		next = nextToken();
+		if (!next.has_value() || next.value().GetType() != TokenType::RESERVED_WORD) {
+			throw Error("Missing <identifier>", _currentLine);
+		}
+	}
+	if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON) {
+		throw Error("Missing ';'", _currentLine);
+	}
 }
 
 void Analyser::analyse_compound_statement() {
