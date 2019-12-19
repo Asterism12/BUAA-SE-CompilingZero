@@ -161,12 +161,13 @@ void Analyser::analyse_unary_expression() {
 		throw Error("Missing <expression>", _currentLine);
 	}
 	//<unary - operator>
-	std::uint32_t factor = 1;
+	std::int32_t factor = 1;
 	if (next.value().GetType == TokenType::PLUS_SIGN) {
 		next = nextToken();
 	}
 	else if (next.value().GetType() == TokenType::MINUS_SIGN) {
 		factor = -1;
+		addInstruction(Instruction(Operation::ipush, 0));
 		next = nextToken();
 	}
 	//primary - expression
@@ -183,9 +184,18 @@ void Analyser::analyse_unary_expression() {
 		}
 		break;
 	case TokenType::IDENTIFIER:
-
-	default:
+		loadVariable(next.value());
+		//函数调用
 		break;
+	case TokenType::UNSIGNED_INTEGER:
+		std::int32_t index = addConstant(next.value());
+		addInstruction(Instruction(Operation::loadc, index));
+		break;
+	default:
+		throw Error("Missing <primary-expression>");
+	}
+	if (factor = -1) {
+		addInstruction(Instruction(Operation::isub, 0));
 	}
 }
 
@@ -288,4 +298,12 @@ void Analyser::addInstruction(Instruction instruction) {
 	else {
 		_instructions[_currentFunction].push_back(instruction);
 	}
+}
+
+//返回常量index
+std::int32_t Analyser::addConstant(const Token& tk)
+{
+	//warning! There is no type check!
+	_consts.push_back(tk.GetValue());
+	return _consts.size() - 1;
 }

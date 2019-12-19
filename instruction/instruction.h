@@ -6,7 +6,8 @@ enum class Operation {
 	isub,
 	imul,
 	idiv,
-	loada
+	loada,
+	loadc
 };
 
 class Instruction final {
