@@ -55,8 +55,8 @@ private:
 	//全局辅助变量及函数
 	std::optional<std::int32_t> getIndexInGlobal(const std::string&);
 	std::int32_t _globalIndex;
-	void addInstruction(Instruction instruction);
 	std::int32_t addConstant(const Token&);
+	void addInstruction(Instruction instruction);
 	void addVariable(const Token&);
 	void loadVariable(const Token&);
 	void initializeVariable(char type);

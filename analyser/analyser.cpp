@@ -300,7 +300,6 @@ void Analyser::addInstruction(Instruction instruction) {
 	}
 }
 
-//·µ»Ø³£Á¿index
 std::int32_t Analyser::addConstant(const Token& tk)
 {
 	//warning! There is no type check!
