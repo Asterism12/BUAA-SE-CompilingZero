@@ -2,6 +2,7 @@
 
 #include "error/error.h"
 #include "tokenizer/tokenizer.h"
+#include "analyser/analyser.h"
 
 #include <fstream>
 #include <iostream>
@@ -37,7 +38,34 @@ void tokenize(std::istream& input, std::ostream& output) {
 }
 
 void analyse(std::istream& input, std::ostream& output) {
-
+	Tokenizer tkz(input);
+	Analyser as(tkz.AllTokens());
+	try {
+		std::cout << "const table" << std::endl;
+		for (std::any c : as._consts) {
+			try {
+				std::cout << std::any_cast<char>(c) << std::endl;
+				continue;
+			}
+			catch(const std::bad_any_cast&){}
+			try {
+				std::cout << std::any_cast<int>(c) << std::endl;
+				continue;
+			}
+			catch (const std::bad_any_cast&) {}
+			try {
+				std::cout << std::any_cast<std::string>(c) << std::endl;
+				continue;
+			}
+			catch (const std::bad_any_cast&) {
+				throw Error("type error");
+			}
+		}
+		std::cout << "function table" << std::endl;
+	}
+	catch (Error err) {
+		err.printErrorMessage();
+	}
 }
 
 void compiler(std::istream& input, std::ostream& output) {

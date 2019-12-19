@@ -2,6 +2,7 @@
 
 void Analyser::Analyse() {
 	analyse_C0_sprogram();
+
 }
 //<C0-program> ::= 
 //	{<variable - declaration>} {<function - definition>}
@@ -237,6 +238,8 @@ void Analyser::analyse_function_call() {
 	addInstruction(Instruction(Operation::call, index));
 }
 
+//<function-definition> ::= 
+//	<type - specifier><identifier><parameter - clause><compound - statement>
 void Analyser::analyse_function_definition() {
 
 }
