@@ -432,8 +432,21 @@ bool Analyser::analyse_statement()
 		}
 		break;
 	case TokenType::IDENTIFIER:
-		unreadToken();
-		analyse_function_call();
+		//预读以确定是函数调用还是赋值表达式
+		next = nextToken();
+		if (next.has_value()) {
+			throw Error("Invalid identifier", _currentLine);
+		}
+		if (next.value().GetType() == TokenType::LEFT_BRACKET) {
+			unreadToken();
+			unreadToken();
+			analyse_function_call();
+		}
+		else {
+			unreadToken();
+			unreadToken();
+			analyse_assignment_expression();
+		}
 		break;
 	case TokenType::SEMICOLON:
 		break;
@@ -443,26 +456,40 @@ bool Analyser::analyse_statement()
 	return true;
 }
 
+//<condition-statement> ::= 
+//	'if' '(' < condition > ')' < statement > ['else' < statement > ]
 void Analyser::analyse_condition_statement() {
 
 }
 
+//<loop-statement> ::= 
+//	'while' '(' < condition > ')' < statement >
 void Analyser::analyse_loop_statement() {
 
 }
 
+//<jump-statement> ::= 
+//	<return-statement>
+//<return-statement> ::= 
+//	'return'[<expression>] ';'
 void Analyser::analyse_jump_statement() {
 
 }
 
+//<print - statement> :: =
+//	'print' '('[<printable - list>] ')' ';'
 void Analyser::analyse_print_statement()
 {
 }
 
+//<scan-statement> ::= 
+//	'scan' '(' < identifier > ')' ';'
 void Analyser::analyse_scan_statement()
 {
 }
 
+//<assignment-expression> ::= 
+//	<identifier><assignment - operator><expression>
 void Analyser::analyse_assignment_expression()
 {
 }
