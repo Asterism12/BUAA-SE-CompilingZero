@@ -236,6 +236,9 @@ void Analyser::analyse_unary_expression() {
 			unreadToken();
 			analyse_function_call();
 		}
+		else {
+			addInstruction(Instruction(Operation::iload));
+		}
 		break;
 	case TokenType::UNSIGNED_INTEGER:
 		index = addConstant(next.value());
@@ -791,8 +794,11 @@ void Analyser::analyse_scan_statement()
 		throw Error("Missing identifier", _currentLine);
 	}
 	std::string var = std::any_cast<std::string>(next.value().GetValue());
+	if (!loadVariable(var)) {
+		throw Error("the variable is not declared", _currentLine);
+	}
 	addInstruction(Instruction(Operation::iscan));
-	modify_variables(var);
+	addInstruction(Instruction(Operation::istore));
 	next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
 		throw Error("Missing ')'", _currentLine);
@@ -807,7 +813,20 @@ void Analyser::analyse_scan_statement()
 //	<identifier><assignment - operator><expression>
 void Analyser::analyse_assignment_expression()
 {
-
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
+		throw Error("Missing identifier", _currentLine);
+	}
+	std::string var = std::any_cast<std::string>(next.value().GetValue());
+	if (!loadVariable(var)) {
+		throw Error("the variable is not declared", _currentLine);
+	}
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::ASSIGNMENT_SIGN) {
+		throw Error("Missing '='", _currentLine);
+	}
+	analyse_expression();
+	addInstruction(Instruction(Operation::istore));
 }
 
 std::optional<Token> Analyser::nextToken() {
@@ -845,13 +864,11 @@ bool Analyser::loadVariable(const std::string& var) {
 	std::optional<std::int32_t> index = getIndexInLocal(var);
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 0, index.value()));
-		addInstruction(Instruction(Operation::iload));
 		return true;
 	}
 	index = getIndexInGlobal(var);
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 1, index.value()));
-		addInstruction(Instruction(Operation::iload));
 		return true;
 	}
 	return false;
