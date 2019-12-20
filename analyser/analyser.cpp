@@ -479,6 +479,7 @@ void Analyser::analyse_condition_statement() {
 	//cmp
 	//je currentIndex+2
 	//jmp else/end
+	//nop
 	//if code
 	char typer;
 	next = nextToken();
@@ -555,6 +556,7 @@ void Analyser::analyse_condition_statement() {
 		throw Error("Invalid <relational - operator>", _currentLine);
 		break;
 	}
+	//')'
 	next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
 		throw Error("Missing ')'", _currentLine);
@@ -562,6 +564,7 @@ void Analyser::analyse_condition_statement() {
 	//jmp跳转位置需要解析完statement再填写
 	addInstruction(Instruction(Operation::jmp, 0));
 	std::int32_t jmpIndexIf = getCurrentInstructionIndex();
+	addInstruction(Instruction(Operation::nop));
 	analyse_statement();
 	//else
 	next = nextToken();
@@ -572,11 +575,13 @@ void Analyser::analyse_condition_statement() {
 			//jmp end
 			//nop(first jmp target)
 			//else code
-			//end
+			//nop(second jmp target)
+
 			addInstruction(Instruction(Operation::jmp, 0));
 			std::int32_t jmpIndexElse = getCurrentInstructionIndex();
 			addInstruction(Instruction(Operation::nop));
 			modifyInstruction(jmpIndexIf, Instruction(Operation::jmp, getCurrentInstructionIndex()));
+
 			analyse_statement();
 			addInstruction(Instruction(Operation::nop));
 			modifyInstruction(jmpIndexElse, Instruction(Operation::jmp, getCurrentInstructionIndex()));
@@ -592,7 +597,112 @@ void Analyser::analyse_condition_statement() {
 //<loop-statement> ::= 
 //	'while' '(' < condition > ')' < statement >
 void Analyser::analyse_loop_statement() {
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
+		throw Error("Missing '('", _currentLine);
+	}
+	//记录condition开始时的代码地址，statement运行完成后跳转至此再次判断
+	addInstruction(Instruction(Operation::nop));
+	std::int32_t conditionIndex = getCurrentInstructionIndex();
 
+	// < condition >
+	char typel = analyse_expression();
+	//[<relational - operator><expression>]
+	//运行栈状态
+	//nop(second jmp target)
+	//cmp
+	//je currentIndex+2
+	//jmp end
+	//while code
+	//jmp
+	//nop(first jmp target)
+	char typer;
+	next = nextToken();
+	if (!next.has_value()) {
+		throw Error("Missing ')'", _currentLine);
+	}
+	switch (next.value().GetType())
+	{
+	case TokenType::EQUAL_SIGN:
+		typer = analyse_expression();
+		if (typel == typer && typel == 'i') {
+			addInstruction(Instruction(Operation::icmp));
+			addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 2));
+		}
+		else {
+			throw Error("Invalid cmp type", _currentLine);
+		}
+		break;
+	case TokenType::UNEQUAL_SIGN:
+		typer = analyse_expression();
+		if (typel == typer && typel == 'i') {
+			addInstruction(Instruction(Operation::icmp));
+			addInstruction(Instruction(Operation::jne, getCurrentInstructionIndex() + 2));
+		}
+		else {
+			throw Error("Invalid cmp type", _currentLine);
+		}
+		break;
+	case TokenType::GREATER_THAN_SIGH:
+		typer = analyse_expression();
+		if (typel == typer && typel == 'i') {
+			addInstruction(Instruction(Operation::icmp));
+			addInstruction(Instruction(Operation::jg, getCurrentInstructionIndex() + 2));
+		}
+		else {
+			throw Error("Invalid cmp type", _currentLine);
+		}
+		break;
+	case TokenType::GREATER_THAN_EQUAL_SIGH:
+		typer = analyse_expression();
+		if (typel == typer && typel == 'i') {
+			addInstruction(Instruction(Operation::icmp));
+			addInstruction(Instruction(Operation::jge, getCurrentInstructionIndex() + 2));
+		}
+		else {
+			throw Error("Invalid cmp type", _currentLine);
+		}
+		break;
+	case TokenType::LESS_THAN_SIGH:
+		typer = analyse_expression();
+		if (typel == typer && typel == 'i') {
+			addInstruction(Instruction(Operation::icmp));
+			addInstruction(Instruction(Operation::jl, getCurrentInstructionIndex() + 2));
+		}
+		else {
+			throw Error("Invalid cmp type", _currentLine);
+		}
+		break;
+	case TokenType::LESS_THAN_EQUAL_SIGH:
+		typer = analyse_expression();
+		if (typel == typer && typel == 'i') {
+			addInstruction(Instruction(Operation::icmp));
+			addInstruction(Instruction(Operation::jle, getCurrentInstructionIndex() + 2));
+		}
+		else {
+			throw Error("Invalid cmp type", _currentLine);
+		}
+		break;
+	case TokenType::RIGHT_BRACKET:
+		addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 2));
+		unreadToken();
+		break;
+	default:
+		throw Error("Invalid <relational - operator>", _currentLine);
+		break;
+	}
+	//')'
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
+		throw Error("Missing ')'", _currentLine);
+	}
+
+	addInstruction(Instruction(Operation::jmp, 0));
+	std::int32_t jmpIndex = getCurrentInstructionIndex();
+	analyse_statement();
+	addInstruction(Instruction(Operation::jmp, conditionIndex));
+	addInstruction(Instruction(Operation::nop));
+	modifyInstruction(jmpIndex, Instruction(Operation::jmp, getCurrentInstructionIndex()));
 }
 
 //<jump-statement> ::= 
@@ -700,7 +810,7 @@ std::optional<std::int32_t> Analyser::getIndexInGlobal(const std::string& s) {
 	}
 }
 
-void Analyser::addInstruction(Instruction instruction) {
+void Analyser::addInstruction(const Instruction& instruction) {
 	if (_currentFunction == -1) {
 		_startInstructions.emplace_back(instruction);
 	}

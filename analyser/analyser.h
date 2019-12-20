@@ -65,7 +65,7 @@ private:
 
 	//变量相关
 	std::int32_t addConstant(const Token&);
-	void addInstruction(Instruction instruction);
+	void addInstruction(const Instruction&);
 	void addVariable(const std::string&, bool);
 	bool loadVariable(const std::string&);
 	void initializeVariable(char type);
