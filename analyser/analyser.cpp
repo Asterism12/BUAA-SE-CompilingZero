@@ -7,8 +7,32 @@ void Analyser::Analyse() {
 //<C0-program> ::= 
 //	{<variable - declaration>} {<function - definition>}
 void Analyser::analyse_C0_sprogram() {
-	while (analyse_variable_declaration()) {}
+	do {
+		//预读以确定是否为变量声明部分
+		auto next = nextToken();
+		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
+			break;
+		}
+		auto tokenValue = std::any_cast<std::string>(next.value().GetValue());
+		if (tokenValue == "void") {
+			break;
+		}
+		if (tokenValue == "int") {
+			next = nextToken();
+			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
+				break;
+			}
+			next = nextToken();
+			if (!next.has_value()) {
+				break;
+			}
+			if ((next.value().GetType() != TokenType::EQUAL_SIGN) && (next.value().GetType() != TokenType::SEMICOLON)) {
+				break;
+			}
+		}
+	} while (analyse_variable_declaration());
 	while (analyse_function_definition()) {}
+	
 }
 
 //<variable-declaration> ::= 
