@@ -544,10 +544,18 @@ void Analyser::analyse_condition_statement() {
 		break;
 	case TokenType::RIGHT_BRACKET:
 		addInstruction(Instruction(Operation::je, 0));
+		unreadToken();
 		break;
 	default:
+		throw Error("Invalid <relational - operator>", _currentLine);
 		break;
 	}
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
+		throw Error("Missing ')'", _currentLine);
+	}
+	std::int32_t jmpIndex = getCurrentInstructionIndex();
+	analyse_statement();
 }
 
 //<loop-statement> ::= 

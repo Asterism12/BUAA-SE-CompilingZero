@@ -1,1 +1,1 @@
-1、analyse_variable_declaration和analyse_function_definition冲突，需要连读2个token确定分界线
+1、je,jne等和实际的跳转应该正好相反？

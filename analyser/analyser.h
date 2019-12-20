@@ -81,5 +81,5 @@ private:
 	char getFunctionRetType(const std::string&);
 
 	//Ö¸ÁîÏà¹Ø
-	int getCurrentInstructionIndex();
+	std::int32_t getCurrentInstructionIndex();
 };
