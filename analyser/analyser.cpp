@@ -484,17 +484,17 @@ std::optional<std::int32_t> Analyser::getIndexInGlobal(const std::string& s) {
 
 void Analyser::addInstruction(Instruction instruction) {
 	if (_currentFunction == -1) {
-		_startInstructions.push_back(instruction);
+		_startInstructions.emplace_back(instruction);
 	}
 	else {
-		_instructions[_currentFunction].push_back(instruction);
+		_instructions[_currentFunction].emplace_back(instruction);
 	}
 }
 
 std::int32_t Analyser::addConstant(const Token& tk)
 {
 	//warning! There is no type check!
-	_consts.push_back(tk.GetValue());
+	_consts.emplace_back(tk.GetValue());
 	return _consts.size() - 1;
 }
 
