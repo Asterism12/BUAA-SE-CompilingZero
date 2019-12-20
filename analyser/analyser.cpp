@@ -157,7 +157,8 @@ char Analyser::analyse_expression() {
 		}
 		next = nextToken();
 	}
-	return;
+
+	return 'i';
 }
 
 //<multiplicative-expression> ::= 
@@ -742,21 +743,53 @@ void Analyser::analyse_jump_statement() {
 
 //<print - statement> :: =
 //	'print' '('[<printable - list>] ')' ';'
+//<printable-list>  ::= 
+//	<printable> {',' < printable > }
+//<printable> :: =
+//	<expression>
 void Analyser::analyse_print_statement()
 {
-
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
+		throw Error("Missing '('", _currentLine);
+	}
+	//<printable - list>
+	//预读如果无')'则无需解析<expression>
+	next = nextToken();
+	if (!next.has_value()) {
+		throw Error("Missing ')'", _currentLine);
+	}
+	if (next.value().GetType() == TokenType::RIGHT_BRACKET) {
+		return;
+	}
+	while (analyse_expression()) {
+		addInstruction(Instruction(Operation::iprint));
+		next = nextToken();
+		if (!next.has_value()) {
+			throw Error("Missing ')'", _currentLine);
+		}
+		if (next.value().GetType() != TokenType::COMMA_SIGH) {
+			break;
+		}
+	}
+	if (next.value().GetType() == TokenType::RIGHT_BRACKET) {
+		return;
+	}
+	throw Error("Missing ')'", _currentLine);
 }
 
 //<scan-statement> ::= 
 //	'scan' '(' < identifier > ')' ';'
 void Analyser::analyse_scan_statement()
 {
+
 }
 
 //<assignment-expression> ::= 
 //	<identifier><assignment - operator><expression>
 void Analyser::analyse_assignment_expression()
 {
+
 }
 
 std::optional<Token> Analyser::nextToken() {

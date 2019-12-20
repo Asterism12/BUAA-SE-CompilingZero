@@ -20,7 +20,8 @@ enum class Operation {
 	nop,
 	pop,
 	ret,
-	iret
+	iret,
+	iprint
 };
 
 class Instruction final {
