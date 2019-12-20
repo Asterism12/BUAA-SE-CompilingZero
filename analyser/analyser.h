@@ -75,6 +75,7 @@ private:
 	std::map<std::string, std::vector<char>> _functionParameter;
 	std::map<std::string,char> _functionRetType;
 	std::int32_t _currentFunction;
+	char _currentFunctionRetType;
 	void addFunction(const std::string&, char);
 	int getFunctionIndex(const std::string&);
 	std::vector<char> getFunctionParameter(const std::string&);

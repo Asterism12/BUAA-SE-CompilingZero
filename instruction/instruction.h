@@ -18,7 +18,9 @@ enum class Operation {
 	jle,
 	jmp,
 	nop,
-	pop
+	pop,
+	ret,
+	iret
 };
 
 class Instruction final {

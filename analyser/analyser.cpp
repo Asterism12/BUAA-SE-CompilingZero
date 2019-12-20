@@ -714,7 +714,30 @@ void Analyser::analyse_loop_statement() {
 //<return-statement> ::= 
 //	'return'[<expression>] ';'
 void Analyser::analyse_jump_statement() {
-
+	std::optional<Token> next;
+	char type;
+	switch (_currentFunctionRetType)
+	{
+	case 'v':
+		next = nextToken();
+		if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON) {
+			throw Error("Missing ';'", _currentLine);
+		}
+		addInstruction(Instruction(Operation::ret));
+		break;
+	case 'i':
+		type = analyse_expression();
+		if (type != 'i') {
+			throw Error("Mismatch return type", _currentLine);
+		}
+		if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON) {
+			throw Error("Missing ';'", _currentLine);
+		}
+		addInstruction(Instruction(Operation::iret));
+		break;
+	default:
+		throw Error("Invalid return type", _currentLine);
+	}
 }
 
 //<print - statement> :: =
