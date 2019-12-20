@@ -889,10 +889,9 @@ std::vector<char> Analyser::getFunctionParameter(const std::string& s)
 	throw Error("function is not exist", _currentLine);
 }
 
-char Analyser::getFunctionRetType(const std::string&)
+char Analyser::getFunctionRetType(const std::string& func)
 {
-
-	return 0;
+	return _functionRetType[func];
 }
 
 int Analyser::getCurrentInstructionIndex()
