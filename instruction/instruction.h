@@ -8,7 +8,14 @@ enum class Operation {
 	idiv,
 	loada,
 	loadc,
-	call
+	call,
+	icmp,
+	je,
+	jne,
+	jg,
+	jge,
+	jl,
+	jle
 };
 
 class Instruction final {
