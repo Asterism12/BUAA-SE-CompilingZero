@@ -28,7 +28,7 @@ private:
 	// 所有的递归子程序
 	void analyse_C0_sprogram();
 	bool analyse_variable_declaration();
-	void analyse_function_definition();
+	bool analyse_function_definition();
 	char analyse_type_specifier();
 	bool analyse_initializer(char type);
 	void analyse_expression();

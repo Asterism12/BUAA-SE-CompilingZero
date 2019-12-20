@@ -7,8 +7,8 @@ void Analyser::Analyse() {
 //<C0-program> ::= 
 //	{<variable - declaration>} {<function - definition>}
 void Analyser::analyse_C0_sprogram() {
-	while (analyse_variable_declaration());
-	analyse_function_definition();
+	while (analyse_variable_declaration()) {}
+	while (analyse_function_definition()) {}
 }
 
 //<variable-declaration> ::= 
@@ -254,7 +254,7 @@ void Analyser::analyse_function_call() {
 
 //<function-definition> ::= 
 //	<type - specifier><identifier><parameter - clause><compound - statement>
-void Analyser::analyse_function_definition() {
+bool Analyser::analyse_function_definition() {
 	auto next = nextToken();
 	if (!next.has_value()) {
 		return;
@@ -294,12 +294,12 @@ void Analyser::analyse_parameter_clause() {
 		//const
 		if (std::any_cast<std::string>(next.value().GetValue()) == "const") {
 			char type = analyse_type_specifier();
-				//<identifier>
-				next = nextToken();
-				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
-					throw Error("Missing <identifier>", _currentLine);
-				}
-				addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
+			//<identifier>
+			next = nextToken();
+			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
+				throw Error("Missing <identifier>", _currentLine);
+			}
+			addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
 		}
 		//non-const
 		else {
@@ -464,7 +464,7 @@ void Analyser::addInstruction(Instruction instruction) {
 	}
 }
 
-std::int32_t Analyser::addConstant(const Token &tk)
+std::int32_t Analyser::addConstant(const Token& tk)
 {
 	//warning! There is no type check!
 	_consts.push_back(tk.GetValue());
