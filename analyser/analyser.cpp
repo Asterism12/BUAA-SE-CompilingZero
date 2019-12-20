@@ -458,6 +458,10 @@ bool Analyser::analyse_statement()
 			unreadToken();
 			analyse_assignment_expression();
 		}
+		next = nextToken();
+		if (!next.has_value() || next.value().GetType != TokenType::SEMICOLON) {
+			throw Error("Missing ';'", _currentLine);
+		}
 		break;
 	case TokenType::SEMICOLON:
 		break;
@@ -853,11 +857,6 @@ void Analyser::initializeVariable(char type) {
 	default:
 		break;
 	}
-}
-
-void Analyser::modify_variables(const std::string&)
-{
-
 }
 
 bool Analyser::loadVariable(const std::string& var) {
