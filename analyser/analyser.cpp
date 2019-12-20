@@ -409,6 +409,7 @@ bool Analyser::analyse_statement()
 		if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACE) {
 			throw Error("Missing '}'", _currentLine);
 		}
+		break;
 	case TokenType::RESERVED_WORD:
 		tokenValue = std::any_cast<std::string>(next.value().GetValue());
 		if (tokenValue == "if") {
@@ -417,10 +418,29 @@ bool Analyser::analyse_statement()
 		else if (tokenValue == "while") {
 			analyse_loop_statement();
 		}
-	default:
+		else if (tokenValue == "return") {
+			analyse_jump_statement();
+		}
+		else if (tokenValue == "print") {
+			analyse_print_statement();
+		}
+		else if (tokenValue == "scan") {
+			analyse_scan_statement();
+		}
+		else {
+			throw Error("Invalid reserved word", _currentLine);
+		}
 		break;
+	case TokenType::IDENTIFIER:
+		unreadToken();
+		analyse_function_call();
+		break;
+	case TokenType::SEMICOLON:
+		break;
+	default:
+		throw Error("Invalid <statement>", _currentLine);
 	}
-	return false;
+	return true;
 }
 
 void Analyser::analyse_condition_statement() {
@@ -433,6 +453,18 @@ void Analyser::analyse_loop_statement() {
 
 void Analyser::analyse_jump_statement() {
 
+}
+
+void Analyser::analyse_print_statement()
+{
+}
+
+void Analyser::analyse_scan_statement()
+{
+}
+
+void Analyser::analyse_assignment_expression()
+{
 }
 
 std::optional<Token> Analyser::nextToken() {

@@ -41,6 +41,9 @@ private:
 	void analyse_condition_statement();
 	void analyse_loop_statement();
 	void analyse_jump_statement();
+	void analyse_print_statement();
+	void analyse_scan_statement();
+	void analyse_assignment_expression();
 
 	//tokenœ‡πÿ
 	std::optional<Token> nextToken();
