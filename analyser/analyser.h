@@ -69,6 +69,7 @@ private:
 	void addVariable(const std::string&, bool);
 	bool loadVariable(const std::string&);
 	void initializeVariable(char type);
+	void modify_variables(const std::string&);
 	
 	//º¯ÊıÏà¹Ø
 	std::map<std::string, std::int32_t> _functions;

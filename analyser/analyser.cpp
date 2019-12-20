@@ -782,7 +782,25 @@ void Analyser::analyse_print_statement()
 //	'scan' '(' < identifier > ')' ';'
 void Analyser::analyse_scan_statement()
 {
-
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
+		throw Error("Missing '('", _currentLine);
+	}
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
+		throw Error("Missing identifier", _currentLine);
+	}
+	std::string var = std::any_cast<std::string>(next.value().GetValue());
+	addInstruction(Instruction(Operation::iscan));
+	modify_variables(var);
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
+		throw Error("Missing ')'", _currentLine);
+	}
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON) {
+		throw Error("Missing ';'", _currentLine);
+	}
 }
 
 //<assignment-expression> ::= 
@@ -816,6 +834,11 @@ void Analyser::initializeVariable(char type) {
 	default:
 		break;
 	}
+}
+
+void Analyser::modify_variables(const std::string&)
+{
+
 }
 
 bool Analyser::loadVariable(const std::string& var) {
