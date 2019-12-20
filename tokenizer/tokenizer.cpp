@@ -78,6 +78,8 @@ std::vector<Token> Tokenizer::Tokenize() {
 			result.emplace_back(p.value());
 		}
 		else {
+			auto tk = Token(TokenType::NULL_TOKEN, 0, 0);
+			result.emplace_back(tk);
 			std::cout << "Tokenizer successful return." << std::endl;
 			return result;
 		}

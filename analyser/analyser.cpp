@@ -32,7 +32,10 @@ void Analyser::analyse_C0_program() {
 		}
 	} while (analyse_variable_declaration());
 	while (analyse_function_definition()) {}
-	
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::NULL_TOKEN) {
+		throw Error("Redundant tail");
+	}
 }
 
 //<variable-declaration> ::= 
