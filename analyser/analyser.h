@@ -26,7 +26,7 @@ public:
 	std::vector<std::vector<Instruction>> _instructions;
 private:
 	// 所有的递归子程序
-	void analyse_C0_sprogram();
+	void analyse_C0_program();
 	bool analyse_variable_declaration();
 	bool analyse_function_definition();
 	char analyse_type_specifier();

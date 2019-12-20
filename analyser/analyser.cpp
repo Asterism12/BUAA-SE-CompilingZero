@@ -1,12 +1,12 @@
 #include "analyser/analyser.h"
 
 void Analyser::Analyse() {
-	analyse_C0_sprogram();
+	analyse_C0_program();
 	std::cout << "Analyser successful return." << std::endl;
 }
 //<C0-program> ::= 
 //	{<variable - declaration>} {<function - definition>}
-void Analyser::analyse_C0_sprogram() {
+void Analyser::analyse_C0_program() {
 	do {
 		//预读以确定是否为变量声明部分
 		auto next = nextToken();
