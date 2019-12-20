@@ -82,4 +82,5 @@ private:
 
 	//÷∏¡Óœ‡πÿ
 	std::int32_t getCurrentInstructionIndex();
+	void modifyInstruction(const std::int32_t, const Instruction&);
 };

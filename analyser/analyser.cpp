@@ -475,6 +475,11 @@ void Analyser::analyse_condition_statement() {
 	// < condition >
 	char typel = analyse_expression();
 	//[<relational - operator><expression>]
+	//运行栈状态
+	//cmp
+	//je currentIndex+2
+	//jmp else/end
+	//if code
 	char typer;
 	next = nextToken();
 	if (!next.has_value()) {
@@ -486,7 +491,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::je,0));
+			addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 2));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -496,7 +501,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jne, 0));
+			addInstruction(Instruction(Operation::jne, getCurrentInstructionIndex() + 2));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -506,7 +511,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jg, 0));
+			addInstruction(Instruction(Operation::jg, getCurrentInstructionIndex() + 2));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -516,7 +521,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jge, 0));
+			addInstruction(Instruction(Operation::jge, getCurrentInstructionIndex() + 2));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -526,7 +531,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jl, 0));
+			addInstruction(Instruction(Operation::jl, getCurrentInstructionIndex() + 2));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -536,14 +541,14 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jle, 0));
+			addInstruction(Instruction(Operation::jle, getCurrentInstructionIndex() + 2));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
 		}
 		break;
 	case TokenType::RIGHT_BRACKET:
-		addInstruction(Instruction(Operation::je, 0));
+		addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 2));
 		unreadToken();
 		break;
 	default:
@@ -554,8 +559,34 @@ void Analyser::analyse_condition_statement() {
 	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
 		throw Error("Missing ')'", _currentLine);
 	}
-	std::int32_t jmpIndex = getCurrentInstructionIndex();
+	//jmp跳转位置需要解析完statement再填写
+	addInstruction(Instruction(Operation::jmp, 0));
+	std::int32_t jmpIndexIf = getCurrentInstructionIndex();
 	analyse_statement();
+	//else
+	next = nextToken();
+	if (next.has_value() && next.value().GetType == TokenType::RESERVED_WORD) {
+		if (std::any_cast<std::string>(next.value().GetValue()) == "else") {
+			//运行栈状态（有else的状态）
+			//if code
+			//jmp end
+			//nop(first jmp target)
+			//else code
+			//end
+			addInstruction(Instruction(Operation::jmp, 0));
+			std::int32_t jmpIndexElse = getCurrentInstructionIndex();
+			addInstruction(Instruction(Operation::nop));
+			modifyInstruction(jmpIndexIf, Instruction(Operation::jmp, getCurrentInstructionIndex()));
+			analyse_statement();
+			addInstruction(Instruction(Operation::nop));
+			modifyInstruction(jmpIndexElse, Instruction(Operation::jmp, getCurrentInstructionIndex()));
+		}
+	}
+	//运行栈状态（无else的状态）
+	//if code
+	//nop((first jmp target))
+	addInstruction(Instruction(Operation::nop));
+	modifyInstruction(jmpIndexIf, Instruction(Operation::jmp, getCurrentInstructionIndex()));
 }
 
 //<loop-statement> ::= 
@@ -727,6 +758,16 @@ char Analyser::getFunctionRetType(const std::string&)
 
 int Analyser::getCurrentInstructionIndex()
 {
+	if (_currentFunction == -1) {
+		throw Error("can not call GCII in start code", _currentLine);
+	}
 	return _instructions[_currentFunction].size() - 1;
 }
 
+void Analyser::modifyInstruction(const std::int32_t index, const Instruction& ins)
+{
+	if (_currentFunction == -1) {
+		throw Error("can not call MI in start code", _currentLine);
+	}
+	_instructions[_currentFunction][index] = ins;
+}
