@@ -14,20 +14,20 @@ void tokenize(std::istream& input, std::ostream& output) {
 		std::vector<Token> tokens = tkz.Tokenize();
 		for (Token t : tokens) {
 			if (t.GetType() == TokenType::RESERVED_WORD) {
-				std::cout << std::any_cast<std::string>(t.GetValue()) << "\treserved word" << std::endl;
+				std::cout << std::any_cast<std::string>(t.GetValue()) << "\treserved word\t" << t.GetLine() << std::endl;
 			}
 			else if (t.GetType() == TokenType::IDENTIFIER) {
-				std::cout << std::any_cast<std::string>(t.GetValue()) << "\tidentifier" << std::endl;
+				std::cout << std::any_cast<std::string>(t.GetValue()) << "\tidentifier\t" << t.GetLine() << std::endl;
 			}
 			else if (t.GetType() == TokenType::UNSIGNED_INTEGER) {
-				std::cout << std::any_cast<int>(t.GetValue()) << "\tinteger" << std::endl;
+				std::cout << std::any_cast<int>(t.GetValue()) << "\tinteger\t\t" << t.GetLine() << std::endl;
 			}
 			else {
 				try {
-					std::cout << std::any_cast<char>(t.GetValue()) << "\tsign" << std::endl;
+					std::cout << std::any_cast<char>(t.GetValue()) << "\tsign\t\t" << t.GetLine() << std::endl;
 				}
 				catch (const std::bad_any_cast&) {
-					std::cout << std::any_cast<std::string>(t.GetValue()) << "\tsign" << std::endl;
+					std::cout << std::any_cast<std::string>(t.GetValue()) << "\tsign\t\t" << t.GetLine() << std::endl;
 				}
 			}
 		}

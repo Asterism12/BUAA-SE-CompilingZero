@@ -7,73 +7,71 @@ void Analyser::Analyse() {
 //<C0-program> ::= 
 //	{<variable - declaration>} {<function - definition>}
 void Analyser::analyse_C0_sprogram() {
-	analyse_variable_declaration();
+	while (analyse_variable_declaration());
 	analyse_function_definition();
 }
 
 //<variable-declaration> ::= 
 //	[<const - qualifier>]<type - specifier> < init - declarator - list>';'
 bool Analyser::analyse_variable_declaration() {
-	while (true) {
-		auto next = nextToken();
-		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
-			return false;
+	auto next = nextToken();
+	if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
+		return false;
+	}
+	//const
+	if (std::any_cast<std::string>(next.value().GetValue()) == "const") {
+		char type = analyse_type_specifier();
+		if (type == 'v') {
+			throw Error("can not identify a 'void' variable", _currentLine);
 		}
-		//const
-		if (std::any_cast<std::string>(next.value().GetValue()) == "const") {
-			char type = analyse_type_specifier();
-			if (type == 'v') {
-				throw Error("can not identify a 'void' variable", _currentLine);
+		do {
+			//init - declarator - list
+			next = nextToken();
+			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
+				throw Error("Missing < init - declarator - list>", _currentLine);
 			}
-			do {
-				//init - declarator - list
-				next = nextToken();
-				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
-					throw Error("Missing < init - declarator - list>", _currentLine);
-				}
-				addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
-				bool has_initializer = analyse_initializer(type);
-				if (!has_initializer) {
-					throw Error("Missing <initializer>", _currentLine);
-				}
-				next = nextToken();
-				if (!next.has_value()) {
-					throw Error("Missing ';'", _currentLine);
-				}
-			} while (next.value().GetType() == TokenType::COMMA_SIGH);
-			if (next.value().GetType() != TokenType::SEMICOLON) {
+			addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
+			bool has_initializer = analyse_initializer(type);
+			if (!has_initializer) {
+				throw Error("Missing <initializer>", _currentLine);
+			}
+			next = nextToken();
+			if (!next.has_value()) {
 				throw Error("Missing ';'", _currentLine);
 			}
-			return true;
+		} while (next.value().GetType() == TokenType::COMMA_SIGH);
+		if (next.value().GetType() != TokenType::SEMICOLON) {
+			throw Error("Missing ';'", _currentLine);
 		}
-		//non-const
-		else {
-			unreadToken();
-			char type = analyse_type_specifier();
-			if (type == 'v') {
-				throw Error("can not identify a 'void' variable", _currentLine);
+		return true;
+	}
+	//non-const
+	else {
+		unreadToken();
+		char type = analyse_type_specifier();
+		if (type == 'v') {
+			throw Error("can not identify a 'void' variable", _currentLine);
+		}
+		do {
+			////init - declarator - list
+			next = nextToken();
+			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
+				throw Error("Missing < init - declarator - list>", _currentLine);
 			}
-			do {
-				////init - declarator - list
-				next = nextToken();
-				if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
-					throw Error("Missing < init - declarator - list>", _currentLine);
-				}
-				addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
-				bool has_initializer = analyse_initializer(type);
-				if (!has_initializer) {
-					initializeVariable(type);
-				}
-				next = nextToken();
-				if (!next.has_value()) {
-					throw Error("Missing ';'", _currentLine);
-				}
-			} while (next.value().GetType() == TokenType::COMMA_SIGH);
-			if (next.value().GetType() != TokenType::SEMICOLON) {
+			addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
+			bool has_initializer = analyse_initializer(type);
+			if (!has_initializer) {
+				initializeVariable(type);
+			}
+			next = nextToken();
+			if (!next.has_value()) {
 				throw Error("Missing ';'", _currentLine);
 			}
-			return true;
+		} while (next.value().GetType() == TokenType::COMMA_SIGH);
+		if (next.value().GetType() != TokenType::SEMICOLON) {
+			throw Error("Missing ';'", _currentLine);
 		}
+		return true;
 	}
 }
 
