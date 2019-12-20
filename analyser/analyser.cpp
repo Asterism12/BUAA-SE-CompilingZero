@@ -744,6 +744,7 @@ void Analyser::analyse_jump_statement() {
 //	'print' '('[<printable - list>] ')' ';'
 void Analyser::analyse_print_statement()
 {
+
 }
 
 //<scan-statement> ::= 
@@ -865,6 +866,7 @@ void Analyser::addFunction(const std::string& func, char type)
 		//add & switch
 		_functions[func] = _currentFunction;
 		_functionRetType[func] = type;
+		_currentFunctionRetType = type;
 		_currentFunction++;
 		_localVars.clear();
 		_localIndex = 0;
