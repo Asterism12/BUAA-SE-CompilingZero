@@ -38,6 +38,9 @@ private:
 	void analyse_parameter_clause();
 	void analyse_compound_statement();
 	bool analyse_statement();
+	void analyse_condition_statement();
+	void analyse_loop_statement();
+	void analyse_jump_statement();
 
 	//tokenœ‡πÿ
 	std::optional<Token> nextToken();

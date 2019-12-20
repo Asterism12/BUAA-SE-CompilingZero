@@ -396,6 +396,7 @@ void Analyser::analyse_compound_statement() {
 //	| ';'
 bool Analyser::analyse_statement()
 {
+	std::string tokenValue;
 	auto next = nextToken();
 	if (!next.has_value()) {
 		return false;
@@ -408,10 +409,30 @@ bool Analyser::analyse_statement()
 		if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACE) {
 			throw Error("Missing '}'", _currentLine);
 		}
+	case TokenType::RESERVED_WORD:
+		tokenValue = std::any_cast<std::string>(next.value().GetValue());
+		if (tokenValue == "if") {
+			analyse_condition_statement();
+		}
+		else if (tokenValue == "while") {
+			analyse_loop_statement();
+		}
 	default:
 		break;
 	}
 	return false;
+}
+
+void Analyser::analyse_condition_statement() {
+
+}
+
+void Analyser::analyse_loop_statement() {
+
+}
+
+void Analyser::analyse_jump_statement() {
+
 }
 
 std::optional<Token> Analyser::nextToken() {
