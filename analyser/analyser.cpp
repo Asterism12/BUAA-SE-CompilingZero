@@ -33,7 +33,7 @@ void Analyser::analyse_C0_program() {
 	} while (analyse_variable_declaration());
 	while (analyse_function_definition()) {}
 	auto next = nextToken();
-	if (!next.has_value() || next.value().GetType() != TokenType::NULL_TOKEN) {
+	if (next.has_value()) {
 		throw Error("Redundant tail");
 	}
 }
@@ -283,8 +283,8 @@ void Analyser::analyse_function_call() {
 //	<type - specifier><identifier><parameter - clause><compound - statement>
 bool Analyser::analyse_function_definition() {
 	auto next = nextToken();
-	if (!next.has_value()) {
-		return;
+	if (!next.has_value() || next.value().GetType() != TokenType::RESERVED_WORD) {
+		return false;
 	}
 	unreadToken();
 	char type = analyse_type_specifier();
@@ -299,6 +299,7 @@ bool Analyser::analyse_function_definition() {
 	//<parameter - clause>
 	analyse_parameter_clause();
 	analyse_compound_statement();
+	return true;
 }
 
 //<parameter-clause> ::= 
@@ -363,7 +364,17 @@ void Analyser::analyse_compound_statement() {
 	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACE) {
 		throw Error("Missing '{'", _currentLine);
 	}
-	while (analyse_variable_declaration()) {}
+	do {
+		//预读以确定是否为变量声明部分
+		auto next = nextToken();
+		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
+			break;
+		}
+		auto tokenValue = std::any_cast<std::string>(next.value().GetValue());
+		if (tokenValue != "int") {
+			break;
+		}
+	} while (analyse_variable_declaration());
 	while (analyse_statement()) {}
 	next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACE) {
