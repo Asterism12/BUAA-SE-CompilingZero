@@ -214,17 +214,24 @@ void Analyser::analyse_unary_expression() {
 		throw Error("Missing <primary-expression>", _currentLine);
 	}
 	std::int32_t index;
+	std::string identifier;
+	char type;
 	switch (next.value().GetType())
 	{
 	case TokenType::LEFT_BRACKET:
 		analyse_expression();
 		next = nextToken();
 		if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
-			throw Error("Missing ')'");
+			throw Error("Missing ')'", _currentLine);
 		}
 		break;
 	case TokenType::IDENTIFIER:
-		if (!loadVariable(std::any_cast<std::string>(next.value().GetValue()))) {
+		identifier = std::any_cast<std::string>(next.value().GetValue());
+		if (!loadVariable(identifier)) {
+			type = getFunctionRetType(identifier);
+			if (type == 'v') {
+				throw Error("Can not call void function in < expression >", _currentLine);
+			}
 			unreadToken();
 			analyse_function_call();
 		}
@@ -434,7 +441,7 @@ bool Analyser::analyse_statement()
 	case TokenType::IDENTIFIER:
 		//预读以确定是函数调用还是赋值表达式
 		next = nextToken();
-		if (next.has_value()) {
+		if (!next.has_value()) {
 			throw Error("Invalid identifier", _currentLine);
 		}
 		if (next.value().GetType() == TokenType::LEFT_BRACKET) {
@@ -458,7 +465,16 @@ bool Analyser::analyse_statement()
 
 //<condition-statement> ::= 
 //	'if' '(' < condition > ')' < statement > ['else' < statement > ]
+//<condition> ::= 
+//	<expression>[<relational - operator><expression>]
 void Analyser::analyse_condition_statement() {
+	auto next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET) {
+		throw Error("Missing '('", _currentLine);
+	}
+	// < condition >
+	next = nextToken();
+	analyse_expression();
 
 }
 
@@ -621,5 +637,11 @@ std::vector<char> Analyser::getFunctionParameter(const std::string& s)
 		return _functionParameter[s];
 	}
 	throw Error("function is not exist", _currentLine);
+}
+
+char Analyser::getFunctionRetType(const std::string&)
+{
+
+	return 0;
 }
 

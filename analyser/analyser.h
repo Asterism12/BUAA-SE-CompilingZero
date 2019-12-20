@@ -78,4 +78,5 @@ private:
 	void addFunction(const std::string&, char);
 	int getFunctionIndex(const std::string&);
 	std::vector<char> getFunctionParameter(const std::string&);
+	char getFunctionRetType(const std::string&);
 };
