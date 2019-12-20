@@ -11,30 +11,43 @@ void Analyser::analyse_C0_program() {
 		//预读以确定是否为变量声明部分
 		auto next = nextToken();
 		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
+			unreadToken();
 			break;
 		}
 		auto tokenValue = std::any_cast<std::string>(next.value().GetValue());
 		if (tokenValue == "void") {
+			unreadToken();
 			break;
 		}
 		if (tokenValue == "int") {
 			next = nextToken();
 			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
+				unreadToken();
+				unreadToken();
 				break;
 			}
 			next = nextToken();
 			if (!next.has_value()) {
+				unreadToken();
+				unreadToken();
+				unreadToken();
 				break;
 			}
-			if ((next.value().GetType() != TokenType::EQUAL_SIGN) && (next.value().GetType() != TokenType::SEMICOLON)) {
+			if ((next.value().GetType() != TokenType::ASSIGNMENT_SIGN) && (next.value().GetType() != TokenType::SEMICOLON)) {
+				unreadToken();
+				unreadToken();
+				unreadToken();
 				break;
 			}
 		}
+		unreadToken();
+		unreadToken();
+		unreadToken();
 	} while (analyse_variable_declaration());
 	while (analyse_function_definition()) {}
 	auto next = nextToken();
 	if (next.has_value()) {
-		throw Error("Redundant tail");
+		throw Error("Redundant tail", _currentLine);
 	}
 }
 
@@ -326,6 +339,7 @@ void Analyser::analyse_parameter_clause() {
 	}
 	//<parameter-declaration>
 	next = nextToken();
+	std::vector<char> paramTypes;
 	while (true) {
 		if (!next.has_value() || next.value().GetType() != TokenType::RESERVED_WORD) {
 			break;
@@ -333,6 +347,7 @@ void Analyser::analyse_parameter_clause() {
 		//const
 		if (std::any_cast<std::string>(next.value().GetValue()) == "const") {
 			char type = analyse_type_specifier();
+			paramTypes.emplace_back(type);
 			//<identifier>
 			next = nextToken();
 			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
@@ -344,6 +359,7 @@ void Analyser::analyse_parameter_clause() {
 		else {
 			unreadToken();
 			char type = analyse_type_specifier();
+			paramTypes.emplace_back(type);
 			next = nextToken();
 			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
 				throw Error("Missing <identifier>", _currentLine);
@@ -361,8 +377,9 @@ void Analyser::analyse_parameter_clause() {
 			throw Error("Missing <identifier>", _currentLine);
 		}
 	}
+	addFunctionParameter(paramTypes);
 	if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET) {
-		throw Error("Missing ';'", _currentLine);
+		throw Error("Missing ')'", _currentLine);
 	}
 }
 
@@ -379,10 +396,12 @@ void Analyser::analyse_compound_statement() {
 		//预读以确定是否为变量声明部分
 		auto next = nextToken();
 		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
+			unreadToken();
 			break;
 		}
 		auto tokenValue = std::any_cast<std::string>(next.value().GetValue());
 		if (tokenValue != "int") {
+			unreadToken();
 			break;
 		}
 	} while (analyse_variable_declaration());
@@ -431,6 +450,7 @@ bool Analyser::analyse_statement()
 		}
 		else if (tokenValue == "return") {
 			analyse_jump_statement();
+			return false;
 		}
 		else if (tokenValue == "print") {
 			analyse_print_statement();
@@ -459,7 +479,7 @@ bool Analyser::analyse_statement()
 			analyse_assignment_expression();
 		}
 		next = nextToken();
-		if (!next.has_value() || next.value().GetType != TokenType::SEMICOLON) {
+		if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON) {
 			throw Error("Missing ';'", _currentLine);
 		}
 		break;
@@ -576,7 +596,7 @@ void Analyser::analyse_condition_statement() {
 	analyse_statement();
 	//else
 	next = nextToken();
-	if (next.has_value() && next.value().GetType == TokenType::RESERVED_WORD) {
+	if (next.has_value() && next.value().GetType() == TokenType::RESERVED_WORD) {
 		if (std::any_cast<std::string>(next.value().GetValue()) == "else") {
 			//运行栈状态（有else的状态）
 			//if code
@@ -738,6 +758,7 @@ void Analyser::analyse_jump_statement() {
 		if (type != 'i') {
 			throw Error("Mismatch return type", _currentLine);
 		}
+		next = nextToken();
 		if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON) {
 			throw Error("Missing ';'", _currentLine);
 		}
@@ -825,7 +846,7 @@ void Analyser::analyse_assignment_expression()
 	if (!loadVariable(var)) {
 		throw Error("the variable is not declared", _currentLine);
 	}
-	auto next = nextToken();
+	next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::ASSIGNMENT_SIGN) {
 		throw Error("Missing '='", _currentLine);
 	}
@@ -842,7 +863,7 @@ std::optional<Token> Analyser::nextToken() {
 
 void Analyser::unreadToken() {
 	if (_offset == 0) {
-		throw Error("analyser unreads token from the begining", _currentLine);
+		return;
 	}
 	_currentLine = _tokens[_offset - 1].GetLine();
 	_offset--;
@@ -928,7 +949,7 @@ std::int32_t Analyser::addConstant(const Token& tk)
 	return _consts.size() - 1;
 }
 
-void Analyser::addFunction(const std::string& func, char type)
+void Analyser::addFunction(std::string func, char type)
 {
 	if (_functions.find(func) != _functions.end()) {
 		throw Error("function has been declared", _currentLine);
@@ -938,10 +959,13 @@ void Analyser::addFunction(const std::string& func, char type)
 	}
 	else {
 		//add & switch
+		std::vector<Instruction> emptyInstruction;
+		_instructions.emplace_back(emptyInstruction);
+		_currentFunctionName = func;
+		_currentFunction++;
 		_functions[func] = _currentFunction;
 		_functionRetType[func] = type;
 		_currentFunctionRetType = type;
-		_currentFunction++;
 		_localVars.clear();
 		_localIndex = 0;
 	}
@@ -953,6 +977,11 @@ int Analyser::getFunctionIndex(const std::string& s)
 		return _functions[s];
 	}
 	throw Error("function is not exist", _currentLine);
+}
+
+void Analyser::addFunctionParameter(const std::vector<char>& types)
+{
+	_functionParameter[_currentFunctionName] = types;
 }
 
 std::vector<char> Analyser::getFunctionParameter(const std::string& s)

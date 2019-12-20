@@ -12,7 +12,8 @@ class Analyser final {
 public:
 	Analyser(std::vector<Token> v)
 		: _tokens(std::move(v)), _offset(0), _globalIndex(0),
-		_currentFunction(-1), _localIndex(0), _currentLine(0) {};
+		_currentFunction(-1), _localIndex(0), _currentLine(0),
+		_currentFunctionName(""), _currentFunctionRetType('v') {};
 
 	// Î¨Ò»½Ó¿Ú
 	void Analyse();
@@ -76,8 +77,10 @@ private:
 	std::map<std::string,char> _functionRetType;
 	std::int32_t _currentFunction;
 	char _currentFunctionRetType;
-	void addFunction(const std::string&, char);
+	std::string _currentFunctionName;
+	void addFunction(std::string, char);
 	int getFunctionIndex(const std::string&);
+	void addFunctionParameter(const std::vector<char>&);
 	std::vector<char> getFunctionParameter(const std::string&);
 	char getFunctionRetType(const std::string&);
 

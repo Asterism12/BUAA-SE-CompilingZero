@@ -40,8 +40,9 @@ void tokenize(std::istream& input, std::ostream& output) {
 void analyse(std::istream& input, std::ostream& output) {
 	Tokenizer tkz(input);
 	Analyser as(tkz.Tokenize());
+	as.Analyse();
 	try {
-		as.Analyse();
+		//as.Analyse();
 		std::cout << "const table" << std::endl;
 		for (std::any c : as._consts) {
 			try {
