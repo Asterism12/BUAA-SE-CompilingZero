@@ -845,11 +845,13 @@ bool Analyser::loadVariable(const std::string& var) {
 	std::optional<std::int32_t> index = getIndexInLocal(var);
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 0, index.value()));
+		addInstruction(Instruction(Operation::iload));
 		return true;
 	}
 	index = getIndexInGlobal(var);
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 1, index.value()));
+		addInstruction(Instruction(Operation::iload));
 		return true;
 	}
 	return false;

@@ -22,7 +22,8 @@ enum class Operation {
 	ret,
 	iret,
 	iprint,
-	iscan
+	iscan,
+	iload
 };
 
 class Instruction final {
