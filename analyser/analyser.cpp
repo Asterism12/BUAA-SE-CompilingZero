@@ -592,6 +592,8 @@ void Analyser::analyse_condition_statement() {
 	//nop((first jmp target))
 	addInstruction(Instruction(Operation::nop));
 	modifyInstruction(jmpIndexIf, Instruction(Operation::jmp, getCurrentInstructionIndex()));
+	//弹出栈顶的比较结果，防止爆栈
+	addInstruction(Instruction(Operation::pop));
 }
 
 //<loop-statement> ::= 
@@ -700,6 +702,8 @@ void Analyser::analyse_loop_statement() {
 	addInstruction(Instruction(Operation::jmp, 0));
 	std::int32_t jmpIndex = getCurrentInstructionIndex();
 	analyse_statement();
+	//弹出栈顶的比较结果，防止爆栈
+	addInstruction(Instruction(Operation::pop));
 	addInstruction(Instruction(Operation::jmp, conditionIndex));
 	addInstruction(Instruction(Operation::nop));
 	modifyInstruction(jmpIndex, Instruction(Operation::jmp, getCurrentInstructionIndex()));
