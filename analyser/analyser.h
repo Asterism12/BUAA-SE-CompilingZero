@@ -31,7 +31,7 @@ private:
 	bool analyse_function_definition();
 	char analyse_type_specifier();
 	bool analyse_initializer(char type);
-	void analyse_expression();
+	char analyse_expression();
 	void analyse_multiplicative_expression();
 	void analyse_unary_expression();
 	void analyse_function_call();

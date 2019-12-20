@@ -135,7 +135,7 @@ bool Analyser::analyse_initializer(char type) {
 //	<additive - expression>
 //<additive - expression> :: =
 //	<multiplicative - expression>{ <additive - operator><multiplicative - expression> }
-void Analyser::analyse_expression() {
+char Analyser::analyse_expression() {
 	analyse_multiplicative_expression();
 	auto next = nextToken();
 
@@ -153,7 +153,7 @@ void Analyser::analyse_expression() {
 			break;
 		default:
 			unreadToken();
-			return;
+			return 'i';
 		}
 		next = nextToken();
 	}
