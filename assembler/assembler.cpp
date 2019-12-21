@@ -52,7 +52,11 @@ std::string Assembler::instructionToAssembly(Instruction & ins) {
 }
 
 void Assembler::Assemble() {
-	writeAll();
+	//writeAll();
+	//magic number
+	_wtr << "\x43\x30\x3A\x29";
+	//version
+	_wtr << "\x00\x00\x00\x01";
 	std::cout << "Assembler successful return." << std::endl;
 }
 

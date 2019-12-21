@@ -4,6 +4,7 @@
 #include "tokenizer/tokenizer.h"
 #include "analyser/analyser.h"
 #include "assembler/assembler.h"
+#include "compiler/compiler.h"
 
 #include <fstream>
 #include <iostream>
@@ -71,7 +72,16 @@ void analyse(std::istream& input, std::ostream& output) {
 }
 
 void compiler(std::istream& input, std::ostream& output) {
-
+	try {
+		Tokenizer tkz(input);
+		Analyser as(tkz.Tokenize());
+		as.Analyse();
+		Compiler cp(output, as);
+		cp.Compile();
+	}
+	catch (Error err) {
+		err.printErrorMessage();
+	}
 }
 
 void assembler(std::istream& input, std::ostream& output) {

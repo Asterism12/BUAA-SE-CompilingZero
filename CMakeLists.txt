@@ -21,6 +21,8 @@ set(lib_src
 	analyser/analyser.cpp
 	assembler/assembler.h
 	assembler/assembler.cpp
+	compiler/compiler.h
+	compiler/compiler.cpp
 	instruction/instruction.h
 	instruction/instruction.cpp
 )
