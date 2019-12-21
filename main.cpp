@@ -3,6 +3,7 @@
 #include "error/error.h"
 #include "tokenizer/tokenizer.h"
 #include "analyser/analyser.h"
+#include "assembler/assembler.h"
 
 #include <fstream>
 #include <iostream>
@@ -74,7 +75,15 @@ void compiler(std::istream& input, std::ostream& output) {
 }
 
 void assembler(std::istream& input, std::ostream& output) {
-
+	try {
+		Tokenizer tkz(input);
+		Analyser as(tkz.Tokenize());
+		as.Analyse();
+		Assembler ab(output, as);
+	}
+	catch (Error err) {
+		err.printErrorMessage();
+	}
 }
 
 int main(int argc, char** argv) {

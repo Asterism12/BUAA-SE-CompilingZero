@@ -10,6 +10,13 @@
 #include <iostream>
 class Assembler {
 public:
+	Assembler(std::ostream& wtr, Analyser as) :_wtr(wtr) {
+		_consts = as._consts;
+		_startInstructions = as._startInstructions;
+		_instructions = as._instructions;
+		_functionNameConstant = as._functionNameConstant;
+		_functionParameter = as._functionParameter;
+	}
 	void Assemble();
 private:
 	//Êä³öÁ÷
