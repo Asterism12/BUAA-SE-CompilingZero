@@ -1,5 +1,6 @@
 #pragma once
 #include "instruction/instruction.h"
+#include "analyser/analyser.h"
 #include "error/error.h"
 
 #include <vector>

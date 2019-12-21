@@ -80,6 +80,7 @@ void assembler(std::istream& input, std::ostream& output) {
 		Analyser as(tkz.Tokenize());
 		as.Analyse();
 		Assembler ab(output, as);
+		ab.Assemble();
 	}
 	catch (Error err) {
 		err.printErrorMessage();

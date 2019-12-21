@@ -959,7 +959,7 @@ void Analyser::addFunction(std::string func, char type)
 	}
 	else {
 		//add & switch
-		_functionNameConstant.emplace_back(_consts.size());
+		_functionNameConstant.push_back(_consts.size());
 		std::vector<Instruction> emptyInstruction;
 		_instructions.emplace_back(emptyInstruction);
 		_currentFunctionName = func;

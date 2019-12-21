@@ -6,6 +6,7 @@ std::string Assembler::instructionToAssembly(Instruction& ins) {
 
 void Assembler::Assemble() {
 	writeAll();
+	std::cout << "Assembler successful return." << std::endl;
 }
 
 void Assembler::writeAll() {
@@ -37,9 +38,9 @@ void Assembler::writeAll() {
 	}
 	//function instructions table
 	for (int i = 0; i < _instructions.size(); i++) {
-		_wtr << 'F' << i << ":\t#" << std::any_cast<std::string>(_consts[i]) << '\n';
-		for (int j = 0; j < _instructions[i].size(); i++) {
-			_wtr << i << '\t' << instructionToAssembly(_instructions[i][j]) << '\n';
+		_wtr << ".F" << i << ":\t#" << std::any_cast<std::string>(_consts[_functionNameConstant[i]]) << '\n';
+		for (int j = 0; j < _instructions[i].size(); j++) {
+			_wtr << j << '\t' << instructionToAssembly(_instructions[i][j]) << '\n';
 		}
 	}
 }

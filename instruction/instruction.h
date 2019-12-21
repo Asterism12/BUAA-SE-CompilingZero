@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <utility>
 enum class Operation {
 	ipush,
 	iadd,
@@ -33,9 +34,6 @@ public:
 	Instruction(Operation opr, int32_t x) : _opr(opr), _x(x), _y(0) {}
 	Instruction(Operation opr) : _opr(opr), _x(0), _y(0) {}
 	Instruction& operator=(Instruction i) { swap(*this, i); return *this; }
-	std::string getInstructionString() {
-		return "";
-	}
 private:
 	Operation _opr;
 	std::int32_t _x;
