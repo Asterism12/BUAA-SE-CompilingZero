@@ -1,112 +1,138 @@
 #include "compiler.h"
-#include "compiler.h"
-
-std::map<Operation, std::string> ITCTable = {
-	{Operation::ipush,"ipush"},
-	{Operation::iadd,"iadd"},
-	{Operation::isub,"isub"},
-	{Operation::imul,"imul"},
-	{Operation::idiv,"idiv"},
-	{Operation::loada,"loada"},
-	{Operation::loadc,"loadc"},
-	{Operation::call,"call"},
-	{Operation::icmp,"icmp"},
-	{Operation::je,"je"},
-	{Operation::jne,"jne"},
-	{Operation::jg,"jg"},
-	{Operation::jge,"jge"},
-	{Operation::jl,"jl"},
-	{Operation::jle,"jle"},
-	{Operation::jmp,"jmp"},
-	{Operation::nop,"nop"},
-	{Operation::pop,"pop"},
-	{Operation::ret,"ret"},
-	{Operation::iret,"iret"},
-	{Operation::iprint,"iprint"},
-	{Operation::iscan,"iscan"},
-	{Operation::iload,"iload"},
-	{Operation::istore,"istore"}
+//import from vm-cpp
+void Compiler::writeNBytes(void* addr, int count) {
+	char bytes[8];
+	if (!(0 < count && count <= 8)) {
+		throw Error("compiler error");
+	}
+	char* p = reinterpret_cast<char*>(addr) + (count - 1);
+	for (int i = 0; i < count; ++i) {
+		bytes[i] = *p--;
+	}
+	_wtr.write(bytes, count);
 };
 
-std::string Compiler::instructionToBinary(Instruction& ins) {
+std::map<Operation, char*> ITCTable = {
+	{Operation::ipush,"\x02"},//4
+	{Operation::iadd,"\x30"},//0
+	{Operation::isub,"\x34"},//0
+	{Operation::imul,"\x38"},//0
+	{Operation::idiv,"\x3c"},//0
+	{Operation::loada,"\x0a"},//2,4
+	{Operation::loadc,"\x09"},//2
+	{Operation::call,"\x80"},//2
+	{Operation::icmp,"\x44"},
+	{Operation::je,"\x71"},
+	{Operation::jne,"\x72"},
+	{Operation::jg,"\x75"},
+	{Operation::jge,"\x74"},
+	{Operation::jl,"\x73"},
+	{Operation::jle,"\x76"},
+	{Operation::jmp,"\x70"},//2
+	{Operation::nop,"\x00"},
+	{Operation::pop,"\x04"},
+	{Operation::ret,"\x88"},//0
+	{Operation::iret,"\x89"},//0
+	{Operation::iprint,"\xa0"},
+	{Operation::iscan,"\xb0"},
+	{Operation::iload,"\x10"},
+	{Operation::istore,"\x20"}
+};
+
+void Compiler::instructionToBinary(Instruction& ins) {
 	std::string ret;
 	if (auto it = ITCTable.find(ins.getOpr()); it != ITCTable.end()) {
-		ret += it->second + '\t';
+		_wtr.write(it->second, 1);
 	}
 	else {
 		throw Error("Unvalid operation type");
 	}
-	switch (ins.getParamNum())
+	switch (ins.getOpr())
 	{
-	case 0:
+	case Operation::ipush: {
+		u4 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
 		break;
-	case 1:
-		ret += std::to_string(ins.getParam().first);
+	}
+	case Operation::loada: {
+		u2 param1 = ins.getParam().first;
+		writeNBytes(&param1, sizeof param1);
+		u2 param2 = ins.getParam().first;
+		writeNBytes(&param2, sizeof param2);
 		break;
-	case 2:
-		ret += std::to_string(ins.getParam().first) + ", " + std::to_string(ins.getParam().second);
+	}
+	case Operation::loadc: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
 		break;
+	}
+	case Operation::call: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
+		break;
+	}
+	case Operation::jmp: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
+		break;
+	}
 	default:
 		break;
 	}
-	return ret;
 }
 
 void Compiler::Compile() {
-	//writeAll();
-	//magic number
-	_wtr << "\x43\x30\x3A\x29";
-	//version
-	//_wtr << "\x00\x00\x00\x01";
-	_wtr.write("\x00\x00\x00\x01", 4);
+	writeAll();
 	std::cout << "Compiler successful return." << std::endl;
 }
 
 void Compiler::writeAll() {
-	//import from vm-cpp
-	char bytes[8];
-	const auto writeNBytes = [&](void* addr, int count) {
-		if (!(0 < count && count <= 8)) {
-			throw Error("compiler error");
-		}
-		char* p = reinterpret_cast<char*>(addr) + (count - 1);
-		for (int i = 0; i < count; ++i) {
-			bytes[i] = *p--;
-		}
-		_wtr.write(bytes, count);
-	};
-
+	//magic number
+	_wtr.write("\x43\x30\x3A\x29", 4);
+	//version
+	_wtr.write("\x00\x00\x00\x01", 4);
 	//const
-	_wtr << ".constants:" << '\n';
-	for (int i = 0; i < _consts.size(); i++) {
-		if (_consts[i].type() == typeid(int)) {
-			_wtr << i << "\tINT\t" << std::any_cast<int>(_consts[i]) << '\n';
+	u2 constNum = _consts.size();
+	std::string test;
+	writeNBytes(&constNum, sizeof constNum);
+	for (auto constant : _consts) {
+		if (constant.type() == typeid(int)) {
+			_wtr.write("\x01", 1);
+			int_t v = std::any_cast<int>(constant);
+			writeNBytes(&v, sizeof v);
 		}
-		else if (_consts[i].type() == typeid(char)) {
-			_wtr << i << "\tCHAR\t" << std::any_cast<char>(_consts[i]) << '\n';
-		}
-		else if (_consts[i].type() == typeid(std::string)) {
-			_wtr << i << "\tSTRING\t" << std::any_cast<std::string>(_consts[i]) << '\n';
+		else if (constant.type() == typeid(std::string)) {
+			_wtr.write("\x00", 1);
+			std::string v = std::any_cast<std::string>(constant);
+			u2 len = v.length();
+			writeNBytes(&len, sizeof len);
+			_wtr.write(v.c_str(), len);
 		}
 		else {
 			throw Error("Unvalid typeid");
 		}
 	}
 	//start code
-	_wtr << ".start:" << '\n';
-	for (int i = 0; i < _startInstructions.size(); i++) {
-		_wtr << i << '\t' << instructionToBinary(_startInstructions[i]) << '\n';
+	u2 instructions_count = _startInstructions.size();
+	writeNBytes(&instructions_count, sizeof instructions_count);
+	for (Instruction ins : _startInstructions) {
+		instructionToBinary(ins);
 	}
 	//function table
-	_wtr << ".functions:" << '\n';
-	for (int i = 0; i < _instructions.size(); i++) {
-		_wtr << i << '\t' << _functionNameConstant[i] << '\t' << _functionParameter.size() << "\t1\n";
-	}
+	u2 functions_count = _functionNameConstant.size();
+	writeNBytes(&functions_count, sizeof functions_count);
 	//function instructions table
 	for (int i = 0; i < _instructions.size(); i++) {
-		_wtr << ".F" << i << ":\t#" << std::any_cast<std::string>(_consts[_functionNameConstant[i]]) << '\n';
-		for (int j = 0; j < _instructions[i].size(); j++) {
-			_wtr << j << '\t' << instructionToBinary(_instructions[i][j]) << '\n';
+		u2 functions_name_index = _functionNameConstant[i];
+		writeNBytes(&functions_name_index, sizeof functions_name_index);
+		u2 functions_param_size = _functionParameter.size();
+		writeNBytes(&functions_param_size, sizeof functions_param_size);
+		u2 functions_level = 1;
+		writeNBytes(&functions_level, sizeof functions_level);
+		u2 functions_ins_count = _instructions[i].size();
+		writeNBytes(&functions_ins_count, sizeof functions_ins_count);
+		for (auto ins : _instructions[i]) {
+			instructionToBinary(ins);
 		}
 	}
 }
