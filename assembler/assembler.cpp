@@ -1,5 +1,9 @@
 #include "assembler.h"
 
+std::string Assembler::instructionToAssembly(Instruction& ins) {
+	return "ins";
+}
+
 void Assembler::Assemble() {
 	writeAll();
 }
@@ -8,7 +12,7 @@ void Assembler::writeAll() {
 	//const
 	_wtr << ".constants:" << '\n';
 	for (int i = 0; i < _consts.size(); i++) {
-		if (_consts[i].type()==typeid(int)) {
+		if (_consts[i].type() == typeid(int)) {
 			_wtr << i << "\tINT\t" << std::any_cast<int>(_consts[i]) << '\n';
 		}
 		else if (_consts[i].type() == typeid(char)) {
@@ -24,7 +28,7 @@ void Assembler::writeAll() {
 	//start code
 	_wtr << ".start:" << '\n';
 	for (int i = 0; i < _startInstructions.size(); i++) {
-		//dosomething
+		_wtr << i << '\t' << instructionToAssembly(_startInstructions[i]) << '\n';
 	}
 	//function table
 	_wtr << ".functions:" << '\n';
@@ -35,7 +39,7 @@ void Assembler::writeAll() {
 	for (int i = 0; i < _instructions.size(); i++) {
 		_wtr << 'F' << i << ":\t#" << std::any_cast<std::string>(_consts[i]) << '\n';
 		for (int j = 0; j < _instructions[i].size(); i++) {
-			//_wtr<<j<<
+			_wtr << i << '\t' << instructionToAssembly(_instructions[i][j]) << '\n';
 		}
 	}
 }

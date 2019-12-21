@@ -26,4 +26,5 @@ private:
 	std::map<std::string, std::vector<char>> _functionParameter;
 
 	void writeAll();
+	std::string instructionToAssembly(Instruction&);
 };
