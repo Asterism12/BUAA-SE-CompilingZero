@@ -220,7 +220,6 @@ void Analyser::analyse_unary_expression() {
 	}
 	else if (next.value().GetType() == TokenType::MINUS_SIGN) {
 		factor = -1;
-		addInstruction(Instruction(Operation::ipush, 0));
 		next = nextToken();
 	}
 	//primary - expression
@@ -262,7 +261,7 @@ void Analyser::analyse_unary_expression() {
 		break;
 	}
 	if (factor == -1) {
-		addInstruction(Instruction(Operation::isub, 0));
+		addInstruction(Instruction(Operation::ineg));
 	}
 }
 
