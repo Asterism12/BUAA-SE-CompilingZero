@@ -28,7 +28,27 @@ std::map<Operation, std::string> ITATable = {
 };
 
 std::string Assembler::instructionToAssembly(Instruction & ins) {
-	return "ins";
+	std::string ret;
+	if (auto it = ITATable.find(ins.getOpr()); it != ITATable.end()) {
+		ret += it->second + '\t';
+	}
+	else {
+		throw Error("Unvalid operation type");
+	}
+	switch (ins.getParamNum())
+	{
+	case 0:
+		break;
+	case 1:
+		ret += std::to_string(ins.getParam().first);
+		break;
+	case 2:
+		ret += std::to_string(ins.getParam().first) + ", " + std::to_string(ins.getParam().second);
+		break;
+	default:
+		break;
+	}
+	return ret;
 }
 
 void Assembler::Assemble() {
