@@ -1,5 +1,5 @@
 #include "compiler.h"
-#include "assembler.h"
+#include "compiler.h"
 
 std::map<Operation, std::string> ITCTable = {
 	{Operation::ipush,"ipush"},
@@ -30,7 +30,7 @@ std::map<Operation, std::string> ITCTable = {
 
 std::string Compiler::instructionToBinary(Instruction& ins) {
 	std::string ret;
-	if (auto it = ITATable.find(ins.getOpr()); it != ITATable.end()) {
+	if (auto it = ITCTable.find(ins.getOpr()); it != ITCTable.end()) {
 		ret += it->second + '\t';
 	}
 	else {
@@ -53,11 +53,29 @@ std::string Compiler::instructionToBinary(Instruction& ins) {
 }
 
 void Compiler::Compile() {
-	writeAll();
+	//writeAll();
+	//magic number
+	_wtr << "\x43\x30\x3A\x29";
+	//version
+	//_wtr << "\x00\x00\x00\x01";
+	_wtr.write("\x00\x00\x00\x01", 4);
 	std::cout << "Compiler successful return." << std::endl;
 }
 
 void Compiler::writeAll() {
+	//import from vm-cpp
+	char bytes[8];
+	const auto writeNBytes = [&](void* addr, int count) {
+		if (!(0 < count && count <= 8)) {
+			throw Error("compiler error");
+		}
+		char* p = reinterpret_cast<char*>(addr) + (count - 1);
+		for (int i = 0; i < count; ++i) {
+			bytes[i] = *p--;
+		}
+		_wtr.write(bytes, count);
+	};
+
 	//const
 	_wtr << ".constants:" << '\n';
 	for (int i = 0; i < _consts.size(); i++) {
@@ -77,7 +95,7 @@ void Compiler::writeAll() {
 	//start code
 	_wtr << ".start:" << '\n';
 	for (int i = 0; i < _startInstructions.size(); i++) {
-		_wtr << i << '\t' << instructionToAssembly(_startInstructions[i]) << '\n';
+		_wtr << i << '\t' << instructionToBinary(_startInstructions[i]) << '\n';
 	}
 	//function table
 	_wtr << ".functions:" << '\n';
@@ -88,7 +106,7 @@ void Compiler::writeAll() {
 	for (int i = 0; i < _instructions.size(); i++) {
 		_wtr << ".F" << i << ":\t#" << std::any_cast<std::string>(_consts[_functionNameConstant[i]]) << '\n';
 		for (int j = 0; j < _instructions[i].size(); j++) {
-			_wtr << j << '\t' << instructionToAssembly(_instructions[i][j]) << '\n';
+			_wtr << j << '\t' << instructionToBinary(_instructions[i][j]) << '\n';
 		}
 	}
 }
