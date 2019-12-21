@@ -20,6 +20,10 @@ private:
 	std::vector<Instruction> _startInstructions;
 	//函数对应的指令队列，函数序号-指令队列
 	std::vector<std::vector<Instruction>> _instructions;
+	//函数-常量对应表
+	std::vector<int> _functionNameConstant;
+	//函数参数表
+	std::map<std::string, std::vector<char>> _functionParameter;
 
 	void writeAll();
 };

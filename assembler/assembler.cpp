@@ -15,7 +15,7 @@ void Assembler::writeAll() {
 			_wtr << i << "\tCHAR\t" << std::any_cast<char>(_consts[i]) << '\n';
 		}
 		else if (_consts[i].type() == typeid(std::string)) {
-			_wtr << i << "\tCHAR\t" << std::any_cast<std::string>(_consts[i]) << '\n';
+			_wtr << i << "\tSTRING\t" << std::any_cast<std::string>(_consts[i]) << '\n';
 		}
 		else {
 			throw Error("Unvalid typeid");
@@ -29,6 +29,13 @@ void Assembler::writeAll() {
 	//function table
 	_wtr << ".functions:" << '\n';
 	for (int i = 0; i < _instructions.size(); i++) {
-
+		_wtr << i << '\t' << _functionNameConstant[i] << '\t' << _functionParameter.size() << "\t1\n";
+	}
+	//function instructions table
+	for (int i = 0; i < _instructions.size(); i++) {
+		_wtr << 'F' << i << ":\t#" << std::any_cast<std::string>(_consts[i]) << '\n';
+		for (int j = 0; j < _instructions[i].size(); i++) {
+			//_wtr<<j<<
+		}
 	}
 }
