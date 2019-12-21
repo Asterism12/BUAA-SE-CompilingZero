@@ -1,4 +1,4 @@
-#include "analyser/analyser.h"
+#include "analyser.h"
 
 void Analyser::Analyse() {
 	analyse_C0_program();

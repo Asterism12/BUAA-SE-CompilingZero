@@ -1,4 +1,4 @@
-#include "tokenizer/tokenizer.h"
+#include "tokenizer.h"
 std::set<std::string> ReservedWords = {
 "void",
 "const",

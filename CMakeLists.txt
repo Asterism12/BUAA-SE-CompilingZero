@@ -20,6 +20,8 @@ set(lib_src
 	analyser/analyser.h
 	analyser/analyser.cpp
 	instruction/instruction.h
+	assembler/assembler.h
+	assembler/assembler.cpp
 )
 
 set(main_src
