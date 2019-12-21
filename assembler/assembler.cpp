@@ -1,6 +1,33 @@
 #include "assembler.h"
 
-std::string Assembler::instructionToAssembly(Instruction& ins) {
+std::map<Operation, std::string> ITATable = {
+	{Operation::ipush,"ipush"},
+	{Operation::iadd,"iadd"},
+	{Operation::isub,"isub"},
+	{Operation::imul,"imul"},
+	{Operation::idiv,"idiv"},
+	{Operation::loada,"loada"},
+	{Operation::loadc,"loadc"},
+	{Operation::call,"call"},
+	{Operation::icmp,"icmp"},
+	{Operation::je,"je"},
+	{Operation::jne,"jne"},
+	{Operation::jg,"jg"},
+	{Operation::jge,"jge"},
+	{Operation::jl,"jl"},
+	{Operation::jle,"jle"},
+	{Operation::jmp,"jmp"},
+	{Operation::nop,"nop"},
+	{Operation::pop,"pop"},
+	{Operation::ret,"ret"},
+	{Operation::iret,"iret"},
+	{Operation::iprint,"iprint"},
+	{Operation::iscan,"iscan"},
+	{Operation::iload,"iload"},
+	{Operation::istore,"istore"}
+};
+
+std::string Assembler::instructionToAssembly(Instruction & ins) {
 	return "ins";
 }
 
