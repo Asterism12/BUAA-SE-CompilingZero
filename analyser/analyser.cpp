@@ -1,4 +1,6 @@
 #include "analyser.h"
+#include "analyser.h"
+#include "analyser.h"
 
 void Analyser::Analyse() {
 	analyse_C0_program();
@@ -98,7 +100,7 @@ bool Analyser::analyse_variable_declaration() {
 			if (!next.has_value() || (next.value().GetType() != TokenType::IDENTIFIER)) {
 				throw Error("Missing < init - declarator - list>", _currentLine);
 			}
-			addVariable(std::any_cast<std::string>(next.value().GetValue()), true);
+			addVariable(std::any_cast<std::string>(next.value().GetValue()), false);
 			bool has_initializer = analyse_initializer(type);
 			if (!has_initializer) {
 				initializeVariable(type);
@@ -322,6 +324,7 @@ bool Analyser::analyse_function_definition() {
 	//<parameter - clause>
 	analyse_parameter_clause();
 	analyse_compound_statement();
+	addRet();
 	return true;
 }
 
@@ -854,6 +857,9 @@ void Analyser::analyse_assignment_expression()
 	if (!loadVariable(var)) {
 		throw Error("the variable is not declared", _currentLine);
 	}
+	if (isConstant(var)) {
+		throw Error("the variable is constant", _currentLine);
+	}
 	next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::ASSIGNMENT_SIGN) {
 		throw Error("Missing '='", _currentLine);
@@ -898,6 +904,25 @@ bool Analyser::loadVariable(const std::string& var) {
 	if (index.has_value()) {
 		addInstruction(Instruction(Operation::loada, 1, index.value()));
 		return true;
+	}
+	return false;
+}
+
+bool Analyser::isConstant(const std::string& var)
+{
+	std::optional<std::int32_t> index = getIndexInLocal(var);
+	if (index.has_value()) {
+		if (_localVars[var].first) {
+			return true;
+		}
+		return false;
+	}
+	index = getIndexInGlobal(var);
+	if (index.has_value()) {
+		if (_globalVars[var].first) {
+			return true;
+		}
+		return false;
 	}
 	return false;
 }
@@ -1004,6 +1029,12 @@ std::vector<char> Analyser::getFunctionParameter(const std::string& s)
 char Analyser::getFunctionRetType(const std::string& func)
 {
 	return _functionRetType[func];
+}
+
+void Analyser::addRet()
+{
+	//ававяЋ
+	addInstruction(Instruction(Operation::ret));
 }
 
 int Analyser::getCurrentInstructionIndex()

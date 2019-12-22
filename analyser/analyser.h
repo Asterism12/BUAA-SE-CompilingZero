@@ -73,6 +73,7 @@ private:
 	void addInstruction(const Instruction&);
 	void addVariable(const std::string&, bool);
 	bool loadVariable(const std::string&);
+	bool isConstant(const std::string&);
 	void initializeVariable(char type);
 	
 	//函数相关
@@ -86,6 +87,7 @@ private:
 	void addFunctionParameter(const std::vector<char>&);
 	std::vector<char> getFunctionParameter(const std::string&);
 	char getFunctionRetType(const std::string&);
+	void addRet();
 
 	//指令相关
 	std::int32_t getCurrentInstructionIndex();

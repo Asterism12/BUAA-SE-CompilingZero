@@ -35,6 +35,7 @@ public:
 	Instruction(Operation opr, int32_t x) : _opr(opr), _x(x), _y(0), _paramNum(1) {}
 	Instruction(Operation opr) : _opr(opr), _x(0), _y(0), _paramNum(0) {}
 	Instruction& operator=(Instruction i) { swap(*this, i); return *this; }
+	bool operator==(const Instruction& i) const { return _opr == i._opr && _x == i._x && _y == i._y; }
 	Operation getOpr();
 	std::int32_t getParamNum();
 	std::pair<std::int32_t, std::int32_t> getParam();
