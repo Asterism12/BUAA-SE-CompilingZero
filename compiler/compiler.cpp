@@ -57,7 +57,7 @@ void Compiler::instructionToBinary(Instruction& ins) {
 	case Operation::loada: {
 		u2 param1 = ins.getParam().first;
 		writeNBytes(&param1, sizeof param1);
-		u2 param2 = ins.getParam().first;
+		u4 param2 = ins.getParam().second;
 		writeNBytes(&param2, sizeof param2);
 		break;
 	}
@@ -72,6 +72,36 @@ void Compiler::instructionToBinary(Instruction& ins) {
 		break;
 	}
 	case Operation::jmp: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
+		break;
+	}
+	case Operation::je: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
+		break;
+	}
+	case Operation::jne: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
+		break;
+	}
+	case Operation::jl: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
+		break;
+	}
+	case Operation::jle: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
+		break;
+	}
+	case Operation::jg: {
+		u2 param = ins.getParam().first;
+		writeNBytes(&param, sizeof param);
+		break;
+	}
+	case Operation::jge: {
 		u2 param = ins.getParam().first;
 		writeNBytes(&param, sizeof param);
 		break;
