@@ -212,7 +212,7 @@ std::optional<Token> Tokenizer::nextToken() {
 			// 如果读到的字符不是上述情况之一，则回退读到的字符，并解析已经读到的字符串为整数
 			//     解析成功则返回无符号整数类型的token，否则返回编译错误
 			if (!current_char.has_value()) {
-				if (ss.str()[0] == '0') {
+				if (ss.str()[0] == '0' && ss.str().size() > 1) {
 					throw Error("StartWithZeroErr", _ptr.first + 1);
 				}
 				try {
@@ -241,7 +241,7 @@ std::optional<Token> Tokenizer::nextToken() {
 			}
 			else {
 				unreadLast();
-				if (ss.str()[0] == '0') {
+				if (ss.str()[0] == '0' && ss.str().size() > 1) {
 					throw Error("StartWithZeroErr", _ptr.first + 1);
 				}
 				try {
