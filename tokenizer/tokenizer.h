@@ -8,6 +8,7 @@
 #include <string>
 #include <optional>
 #include <sstream>
+#include <limits.h>
 
 enum class DFAState {
 	INITIAL_STATE,
@@ -43,10 +44,10 @@ private:
 	std::pair<std::uint64_t, std::uint64_t> _ptr;
 
 	std::optional<Token> nextToken();
-	void Tokenizer::readAll();
+	void readAll();
 
 	std::pair<std::uint64_t, std::uint64_t> nextPos();
-	std::pair<std::uint64_t, std::uint64_t> Tokenizer::previousPos();
+	std::pair<std::uint64_t, std::uint64_t> previousPos();
 
 	std::optional<char> nextChar();
 	bool isEOF();
