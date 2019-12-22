@@ -161,7 +161,12 @@ int main(int argc, char** argv) {
 	else
 		input = &std::cin;
 	if (output_file != "-") {
-		outf.open(output_file, std::ios::out | std::ios::trunc);
+		if (program["-c"] == true) {
+			outf.open(output_file, std::ios::binary| std::ios::trunc);
+		}
+		else {
+			outf.open(output_file, std::ios::out | std::ios::trunc);
+		}
 		if (!outf) {
 			std::cout << "Fail to open " + output_file + " for writing.\n";
 			exit(2);

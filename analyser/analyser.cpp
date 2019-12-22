@@ -393,7 +393,7 @@ void Analyser::analyse_compound_statement() {
 	}
 	do {
 		//预读以确定是否为变量声明部分
-		auto next = nextToken();
+		next = nextToken();
 		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
 			unreadToken();
 			break;
@@ -403,6 +403,7 @@ void Analyser::analyse_compound_statement() {
 			unreadToken();
 			break;
 		}
+		unreadToken();
 	} while (analyse_variable_declaration());
 	while (analyse_statement()) {}
 	next = nextToken();
@@ -439,6 +440,9 @@ bool Analyser::analyse_statement()
 			throw Error("Missing '}'", _currentLine);
 		}
 		break;
+	case TokenType::RIGHT_BRACE:
+		unreadToken();
+		return false;
 	case TokenType::RESERVED_WORD:
 		tokenValue = std::any_cast<std::string>(next.value().GetValue());
 		if (tokenValue == "if") {
@@ -519,7 +523,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -529,7 +533,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jne, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jne, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -539,7 +543,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jg, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jg, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -549,7 +553,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jge, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jge, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -559,7 +563,7 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jl, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jl, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -569,14 +573,14 @@ void Analyser::analyse_condition_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jle, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jle, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
 		}
 		break;
 	case TokenType::RIGHT_BRACKET:
-		addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 2));
+		addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 3));
 		unreadToken();
 		break;
 	default:
@@ -613,6 +617,7 @@ void Analyser::analyse_condition_statement() {
 			addInstruction(Instruction(Operation::nop));
 			modifyInstruction(jmpIndexElse, Instruction(Operation::jmp, getCurrentInstructionIndex()));
 		}
+		return;
 	}
 	//运行栈状态（无else的状态）
 	//if code
@@ -656,7 +661,7 @@ void Analyser::analyse_loop_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -666,7 +671,7 @@ void Analyser::analyse_loop_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jne, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jne, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -676,7 +681,7 @@ void Analyser::analyse_loop_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jg, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jg, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -686,7 +691,7 @@ void Analyser::analyse_loop_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jge, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jge, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -696,7 +701,7 @@ void Analyser::analyse_loop_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jl, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jl, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
@@ -706,14 +711,14 @@ void Analyser::analyse_loop_statement() {
 		typer = analyse_expression();
 		if (typel == typer && typel == 'i') {
 			addInstruction(Instruction(Operation::icmp));
-			addInstruction(Instruction(Operation::jle, getCurrentInstructionIndex() + 2));
+			addInstruction(Instruction(Operation::jle, getCurrentInstructionIndex() + 3));
 		}
 		else {
 			throw Error("Invalid cmp type", _currentLine);
 		}
 		break;
 	case TokenType::RIGHT_BRACKET:
-		addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 2));
+		addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 3));
 		unreadToken();
 		break;
 	default:
@@ -789,6 +794,7 @@ void Analyser::analyse_print_statement()
 	if (next.value().GetType() == TokenType::RIGHT_BRACKET) {
 		return;
 	}
+	unreadToken();
 	while (analyse_expression()) {
 		addInstruction(Instruction(Operation::iprint));
 		next = nextToken();
@@ -799,10 +805,13 @@ void Analyser::analyse_print_statement()
 			break;
 		}
 	}
-	if (next.value().GetType() == TokenType::RIGHT_BRACKET) {
-		return;
+	if (next.value().GetType() != TokenType::RIGHT_BRACKET) {
+		throw Error("Missing ')'", _currentLine);
 	}
-	throw Error("Missing ')'", _currentLine);
+	next = nextToken();
+	if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON) {
+		throw Error("Missing ';'", _currentLine);
+	}
 }
 
 //<scan-statement> ::= 

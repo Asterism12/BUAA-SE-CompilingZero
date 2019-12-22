@@ -82,7 +82,8 @@ void Assembler::writeAll() {
 	//function table
 	_wtr << ".functions:" << '\n';
 	for (int i = 0; i < _instructions.size(); i++) {
-		_wtr << i << '\t' << _functionNameConstant[i] << '\t' << _functionParameter.size() << "\t1\n";
+		std::string function_name = std::any_cast<std::string>(_consts[_functionNameConstant[i]]);
+		_wtr << i << '\t' << _functionNameConstant[i] << '\t' << _functionParameter[function_name].size() << "\t1\n";
 	}
 	//function instructions table
 	for (int i = 0; i < _instructions.size(); i++) {

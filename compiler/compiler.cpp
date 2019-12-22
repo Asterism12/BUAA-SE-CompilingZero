@@ -41,7 +41,6 @@ std::map<Operation, char*> ITCTable = {
 };
 
 void Compiler::instructionToBinary(Instruction& ins) {
-	std::string ret;
 	if (auto it = ITCTable.find(ins.getOpr()); it != ITCTable.end()) {
 		_wtr.write(it->second, 1);
 	}
@@ -126,7 +125,8 @@ void Compiler::writeAll() {
 	for (int i = 0; i < _instructions.size(); i++) {
 		u2 functions_name_index = _functionNameConstant[i];
 		writeNBytes(&functions_name_index, sizeof functions_name_index);
-		u2 functions_param_size = _functionParameter.size();
+		std::string function_name = std::any_cast<std::string>(_consts[_functionNameConstant[i]]);
+		u2 functions_param_size = _functionParameter[function_name].size();
 		writeNBytes(&functions_param_size, sizeof functions_param_size);
 		u2 functions_level = 1;
 		writeNBytes(&functions_level, sizeof functions_level);
