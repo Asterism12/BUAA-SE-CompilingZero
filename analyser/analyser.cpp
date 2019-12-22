@@ -434,7 +434,7 @@ bool Analyser::analyse_statement()
 	switch (next.value().GetType())
 	{
 	case TokenType::LEFT_BRACE:
-		analyse_statement();
+		while (analyse_statement()) {}
 		next = nextToken();
 		if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACE) {
 			throw Error("Missing '}'", _currentLine);
