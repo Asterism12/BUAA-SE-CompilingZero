@@ -65,7 +65,7 @@ void Assembler::writeAll() {
 			_wtr << i << "\tI\t" << std::any_cast<int>(_consts[i]) << '\n';
 		}
 		else if (_consts[i].type() == typeid(std::string)) {
-			_wtr << i << "\tS\t" << std::any_cast<std::string>(_consts[i]) << '\n';
+			_wtr << i << "\tS\t\"" << std::any_cast<std::string>(_consts[i]) << "\"\n";
 		}
 		else {
 			throw Error("Unvalid typeid");
