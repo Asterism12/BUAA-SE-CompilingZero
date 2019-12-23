@@ -1,0 +1,75 @@
+.constants:
+0	I	42
+1	S	"fun"
+2	S	"whileFun"
+3	I	0
+4	I	0
+5	I	1
+6	S	"nothing"
+7	S	"main"
+8	I	8
+9	I	8
+10	I	0
+11	I	0
+.start:
+0	loadc	0
+.functions:
+0	1	1	1
+1	2	0	1
+2	6	0	1
+3	7	0	1
+.F0:	#fun
+0	loada	0, 0
+1	iload	
+2	ineg	
+3	iret	
+4	ret	
+.F1:	#whileFun
+0	loadc	3
+1	nop	
+2	loada	0, 0
+3	iload	
+4	loadc	4
+5	icmp	
+6	jge	8
+7	jmp	19
+8	loada	1, 0
+9	iload	
+10	iprint	
+11	loada	0, 0
+12	loada	0, 0
+13	iload	
+14	loadc	5
+15	isub	
+16	istore	
+17	pop	
+18	jmp	1
+19	nop	
+20	ret	
+.F2:	#nothing
+0	ret	
+.F3:	#main
+0	loadc	8
+1	call	0
+2	loadc	9
+3	iadd	
+4	loadc	10
+5	loada	0, 1
+6	iload	
+7	loadc	11
+8	icmp	
+9	jg	11
+10	jmp	16
+11	nop	
+12	loada	0, 0
+13	iscan	
+14	istore	
+15	jmp	20
+16	nop	
+17	loada	0, 0
+18	iload	
+19	iprint	
+20	nop	
+21	call	1
+22	call	2
+23	ret	
