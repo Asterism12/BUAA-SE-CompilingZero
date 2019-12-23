@@ -1,6 +1,4 @@
 #include "analyser.h"
-#include "analyser.h"
-#include "analyser.h"
 
 void Analyser::Analyse() {
 	analyse_C0_program();
@@ -50,6 +48,9 @@ void Analyser::analyse_C0_program() {
 	auto next = nextToken();
 	if (next.has_value()) {
 		throw Error("Redundant tail", _currentLine);
+	}
+	if (_functions.find("main") == _functions.end()) {
+		throw Error("Must have main()");
 	}
 }
 
@@ -902,7 +903,12 @@ bool Analyser::loadVariable(const std::string& var) {
 	}
 	index = getIndexInGlobal(var);
 	if (index.has_value()) {
-		addInstruction(Instruction(Operation::loada, 1, index.value()));
+		if (_currentFunction == -1) {
+			addInstruction(Instruction(Operation::loada, 0, index.value()));
+		}
+		else {
+			addInstruction(Instruction(Operation::loada, 1, index.value()));
+		}
 		return true;
 	}
 	return false;
@@ -1034,7 +1040,13 @@ char Analyser::getFunctionRetType(const std::string& func)
 void Analyser::addRet()
 {
 	//ававяЋ
-	addInstruction(Instruction(Operation::ret));
+	if (_currentFunctionRetType == 'i') {
+		addInstruction(Instruction(Operation::ipush, 0));
+		addInstruction(Instruction(Operation::iret));
+	}
+	else {
+		addInstruction(Instruction(Operation::ret));
+	}
 }
 
 int Analyser::getCurrentInstructionIndex()
