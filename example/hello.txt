@@ -1,0 +1,32 @@
+int g0 = 42;
+
+int fun(int num) {
+    return -num;
+}
+
+int whileFun(){
+    int tmp=3;
+    while(tmp>=0){
+        print(g0);
+        tmp=tmp-1;
+    }
+    return 0;
+}
+
+void nothing(){
+    ;
+}
+
+int main() {
+    int i=fun(8)+8;
+    int j=1;
+    if(j>0)
+        scan(i);
+    else{
+        i=1;
+    }
+    print(i);
+    whileFun();
+    nothing();
+return 0;
+}
