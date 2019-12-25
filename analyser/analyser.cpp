@@ -59,6 +59,7 @@ void Analyser::analyse_C0_program() {
 bool Analyser::analyse_variable_declaration() {
 	auto next = nextToken();
 	if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
+		unreadToken();
 		return false;
 	}
 	//const
@@ -141,6 +142,7 @@ char Analyser::analyse_type_specifier() {
 bool Analyser::analyse_initializer(char type) {
 	auto next = nextToken();
 	if (!next.has_value() || (next.value().GetType() != TokenType::ASSIGNMENT_SIGN)) {
+		unreadToken();
 		return false;
 	}
 	analyse_expression();
@@ -310,6 +312,7 @@ void Analyser::analyse_function_call() {
 bool Analyser::analyse_function_definition() {
 	auto next = nextToken();
 	if (!next.has_value() || next.value().GetType() != TokenType::RESERVED_WORD) {
+		unreadToken();
 		return false;
 	}
 	unreadToken();
@@ -433,6 +436,7 @@ bool Analyser::analyse_statement()
 	std::string tokenValue;
 	auto next = nextToken();
 	if (!next.has_value()) {
+		unreadToken();
 		return false;
 	}
 	switch (next.value().GetType())
@@ -626,10 +630,9 @@ void Analyser::analyse_condition_statement() {
 	//运行栈状态（无else的状态）
 	//if code
 	//nop((first jmp target))
+	unreadToken();
 	addInstruction(Instruction(Operation::nop));
 	modifyInstruction(jmpIndexIf, Instruction(Operation::jmp, getCurrentInstructionIndex()));
-	//弹出栈顶的比较结果，防止爆栈
-	addInstruction(Instruction(Operation::pop));
 }
 
 //<loop-statement> ::= 
@@ -738,8 +741,6 @@ void Analyser::analyse_loop_statement() {
 	addInstruction(Instruction(Operation::jmp, 0));
 	std::int32_t jmpIndex = getCurrentInstructionIndex();
 	analyse_statement();
-	//弹出栈顶的比较结果，防止爆栈
-	addInstruction(Instruction(Operation::pop));
 	addInstruction(Instruction(Operation::jmp, conditionIndex));
 	addInstruction(Instruction(Operation::nop));
 	modifyInstruction(jmpIndex, Instruction(Operation::jmp, getCurrentInstructionIndex()));
@@ -870,14 +871,21 @@ void Analyser::analyse_assignment_expression()
 }
 
 std::optional<Token> Analyser::nextToken() {
-	if (_offset == _tokens.size())
+	if (_offset >= _tokens.size()) {
+		_offset++;
 		return {};
+	}
+		
 	_currentLine = _tokens[_offset].GetLine();
 	return _tokens[_offset++];
 }
 
 void Analyser::unreadToken() {
 	if (_offset == 0) {
+		return;
+	}
+	if (_offset >= _tokens.size()) {
+		_offset--;
 		return;
 	}
 	_currentLine = _tokens[_offset - 1].GetLine();

@@ -99,7 +99,7 @@ void assembler(std::istream& input, std::ostream& output) {
 
 int main(int argc, char** argv) {
 
-	argparse::ArgumentParser program("program name");
+	argparse::ArgumentParser program("cc0");
 
 	program.add_argument("-t")
 		.help("Translate the input c0 source code into a text assembly file")
