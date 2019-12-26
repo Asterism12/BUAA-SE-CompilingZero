@@ -188,6 +188,7 @@ std::optional<Token> Tokenizer::nextToken() {
 					break;
 				case ',':
 					current_state = DFAState::COMMA_STATE;
+					break;
 
 					// 不接受的字符导致的不合法的状态
 				default:

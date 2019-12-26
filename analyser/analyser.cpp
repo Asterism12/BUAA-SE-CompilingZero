@@ -9,12 +9,18 @@ void Analyser::Analyse() {
 void Analyser::analyse_C0_program() {
 	do {
 		//预读以确定是否为变量声明部分
+		bool isConst = false;
 		auto next = nextToken();
 		if (!next.has_value() || (next.value().GetType() != TokenType::RESERVED_WORD)) {
 			unreadToken();
 			break;
 		}
 		auto tokenValue = std::any_cast<std::string>(next.value().GetValue());
+		if (tokenValue == "const") {
+			isConst = true;
+			next = nextToken();
+			tokenValue = std::any_cast<std::string>(next.value().GetValue());
+		}
 		if (tokenValue == "void") {
 			unreadToken();
 			break;
@@ -39,6 +45,9 @@ void Analyser::analyse_C0_program() {
 				unreadToken();
 				break;
 			}
+		}
+		if (isConst) {
+			unreadToken();
 		}
 		unreadToken();
 		unreadToken();
