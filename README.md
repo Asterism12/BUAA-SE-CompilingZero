@@ -19,15 +19,15 @@ make
 ## How to use
 Usage: cc0 [options] input
 
-Positional arguments:
+Positional arguments:  
 input specify the input file.
 
-Optional arguments:
--h --help show this help message and exit
--s Translate the input c0 source code into a text assembly file
--c Translate the input c0 source code into a binary object file
--h Shows help with compiler usage
--o specify the output file.[Required]
+Optional arguments:  
+-h --help show this help message and exit  
+-s Translate the input c0 source code into a text assembly file  
+-c Translate the input c0 source code into a binary object file  
+-h Shows help with compiler usage  
+-o specify the output file.[Required]  
 
 ## 3rd party
 argparse https://github.com/p-ranav/argparse
