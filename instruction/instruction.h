@@ -27,7 +27,8 @@ enum class Operation {
 	iload,
 	istore,
 	ineg,
-	printl
+	printl,
+	cprint,
 };
 
 class Instruction final {

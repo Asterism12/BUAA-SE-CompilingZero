@@ -38,7 +38,8 @@ std::map<Operation, char*> ITCTable = {
 	{Operation::iload,"\x10"},
 	{Operation::istore,"\x20"},
 	{Operation::ineg,"\x40"},
-	{Operation::printl,"\xaf"}//0
+	{Operation::printl,"\xaf"},//0
+	{Operation::cprint,"\xa2"}
 };
 
 void Compiler::instructionToBinary(Instruction& ins) {

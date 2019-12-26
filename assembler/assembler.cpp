@@ -26,7 +26,8 @@ std::map<Operation, std::string> ITATable = {
 	{Operation::iload,"iload"},
 	{Operation::istore,"istore"},
 	{Operation::ineg,"ineg"},
-	{Operation::printl,"printl"}
+	{Operation::printl,"printl"},
+	{Operation::cprint,"cprint"}
 };
 
 std::string Assembler::instructionToAssembly(Instruction & ins) {

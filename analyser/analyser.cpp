@@ -415,7 +415,7 @@ void Analyser::analyse_compound_statement() {
 			break;
 		}
 		auto tokenValue = std::any_cast<std::string>(next.value().GetValue());
-		if (tokenValue != "int") {
+		if (tokenValue != "int" && tokenValue != "const") {
 			unreadToken();
 			break;
 		}
@@ -597,7 +597,7 @@ void Analyser::analyse_condition_statement() {
 		}
 		break;
 	case TokenType::RIGHT_BRACKET:
-		addInstruction(Instruction(Operation::je, getCurrentInstructionIndex() + 3));
+		addInstruction(Instruction(Operation::jne, getCurrentInstructionIndex() + 3));
 		unreadToken();
 		break;
 	default:
@@ -633,8 +633,8 @@ void Analyser::analyse_condition_statement() {
 			analyse_statement();
 			addInstruction(Instruction(Operation::nop));
 			modifyInstruction(jmpIndexElse, Instruction(Operation::jmp, getCurrentInstructionIndex()));
+			return;
 		}
-		return;
 	}
 	//运行栈状态（无else的状态）
 	//if code
@@ -809,17 +809,23 @@ void Analyser::analyse_print_statement()
 		return;
 	}
 	unreadToken();
+	int t = 0;
 	while (analyse_expression()) {
+		if (t > 0) {
+			addInstruction(Instruction(Operation::ipush, 32));
+			addInstruction(Instruction(Operation::cprint));
+		}
 		addInstruction(Instruction(Operation::iprint));
-		addInstruction(Instruction(Operation::printl));
 		next = nextToken();
 		if (!next.has_value()) {
-			throw Error("Missing ')'", _currentLine);
+			throw Error("Missing ','", _currentLine);
 		}
 		if (next.value().GetType() != TokenType::COMMA_SIGH) {
 			break;
 		}
+		t++;
 	}
+	addInstruction(Instruction(Operation::printl));
 	if (next.value().GetType() != TokenType::RIGHT_BRACKET) {
 		throw Error("Missing ')'", _currentLine);
 	}
@@ -885,7 +891,7 @@ std::optional<Token> Analyser::nextToken() {
 		_offset++;
 		return {};
 	}
-		
+
 	_currentLine = _tokens[_offset].GetLine();
 	return _tokens[_offset++];
 }
