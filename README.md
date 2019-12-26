@@ -32,5 +32,5 @@ Optional arguments:
 ## 3rd party
 argparse https://github.com/p-ranav/argparse
 
-## PS
-Only support C0-basic-grammer
+## Notice
+Only support C0-basic-grammer.
