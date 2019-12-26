@@ -10,67 +10,6 @@
 #include <iostream>
 #include <string.h>
 
-void tokenize(std::istream& input, std::ostream& output) {
-	Tokenizer tkz(input);
-	try {
-		std::vector<Token> tokens = tkz.Tokenize();
-		for (Token t : tokens) {
-			if (t.GetType() == TokenType::RESERVED_WORD) {
-				std::cout << std::any_cast<std::string>(t.GetValue()) << "\treserved word\t" << t.GetLine() << std::endl;
-			}
-			else if (t.GetType() == TokenType::IDENTIFIER) {
-				std::cout << std::any_cast<std::string>(t.GetValue()) << "\tidentifier\t" << t.GetLine() << std::endl;
-			}
-			else if (t.GetType() == TokenType::UNSIGNED_INTEGER) {
-				std::cout << std::any_cast<int>(t.GetValue()) << "\tinteger\t\t" << t.GetLine() << std::endl;
-			}
-			else {
-				try {
-					std::cout << std::any_cast<char>(t.GetValue()) << "\tsign\t\t" << t.GetLine() << std::endl;
-				}
-				catch (const std::bad_any_cast&) {
-					std::cout << std::any_cast<std::string>(t.GetValue()) << "\tsign\t\t" << t.GetLine() << std::endl;
-				}
-			}
-		}
-	}
-	catch (Error err) {
-		err.printErrorMessage();
-	}
-}
-
-void analyse(std::istream& input, std::ostream& output) {
-	Tokenizer tkz(input);
-	Analyser as(tkz.Tokenize());
-	as.Analyse();
-	try {
-		//as.Analyse();
-		std::cout << "const table" << std::endl;
-		for (std::any c : as._consts) {
-			try {
-				std::cout << std::any_cast<char>(c) << "\tchar" << std::endl;
-				continue;
-			}
-			catch(const std::bad_any_cast&){}
-			try {
-				std::cout << std::any_cast<int>(c) << "\tint" << std::endl;
-				continue;
-			}
-			catch (const std::bad_any_cast&) {}
-			try {
-				std::cout << std::any_cast<std::string>(c) << "\tstring" << std::endl;
-				continue;
-			}
-			catch (const std::bad_any_cast&) {
-				throw Error("type error");
-			}
-		}
-	}
-	catch (Error err) {
-		err.printErrorMessage();
-	}
-}
-
 void compiler(std::istream& input, std::ostream& output) {
 	try {
 		Tokenizer tkz(input);
@@ -100,16 +39,6 @@ void assembler(std::istream& input, std::ostream& output) {
 int main(int argc, char** argv) {
 
 	argparse::ArgumentParser program("cc0");
-
-	program.add_argument("-t")
-		.help("tokenizer test")
-		.default_value(false)
-		.implicit_value(true);
-
-	program.add_argument("-a")
-		.help("analyser test")
-		.default_value(false)
-		.implicit_value(true);
 
 	program.add_argument("-s")
 		.help("Translate the input c0 source code into a text assembly file")
@@ -175,14 +104,6 @@ int main(int argc, char** argv) {
 	}
 	else
 		output = &std::cout;
-
-	//for test
-	if (program["-t"] == true) {
-		tokenize(*input, *output);
-	}
-	if (program["-a"] == true) {
-		analyse(*input, *output);
-	}
 
 	if (program["-s"] == true && program["-c"] == true) {
 		std::cout << "You can only perform tokenization or syntactic analysis at one time.";
