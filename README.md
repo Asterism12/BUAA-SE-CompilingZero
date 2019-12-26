@@ -7,11 +7,17 @@
 
 ## How to build
 git clone git@github.com:Asterism12/BUAA-SE-CompilingZero.git
+
 cd BUAA-SE-CompilingZero
+
 git submodule update --init --recursive
+
 mkdir build
+
 cd build
+
 cmake ..
+
 make
 
 ## How to use
