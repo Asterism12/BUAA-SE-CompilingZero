@@ -811,6 +811,7 @@ void Analyser::analyse_print_statement()
 	unreadToken();
 	while (analyse_expression()) {
 		addInstruction(Instruction(Operation::iprint));
+		addInstruction(Instruction(Operation::printl));
 		next = nextToken();
 		if (!next.has_value()) {
 			throw Error("Missing ')'", _currentLine);
