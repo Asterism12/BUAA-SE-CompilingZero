@@ -102,12 +102,12 @@ int main(int argc, char** argv) {
 	argparse::ArgumentParser program("cc0");
 
 	program.add_argument("-t")
-		.help("Translate the input c0 source code into a text assembly file")
+		.help("tokenizer test")
 		.default_value(false)
 		.implicit_value(true);
 
 	program.add_argument("-a")
-		.help("Translate the input c0 source code into a text assembly file")
+		.help("analyser test")
 		.default_value(false)
 		.implicit_value(true);
 
